@@ -1,0 +1,33 @@
+1. Title: BU-BIL (Boston University - Biomedical Image Library)
+
+2. Sources:
+
+	(a) D. Gurari, D. Theriault, M. Sameki, B. Isenberg, T. A. Pham, A. Purwada, P. 	Solski, M. Walker, C. Zhang, J. Y. Wong, and M. Betke. "How to Collect 			Segmentations for Biomedical Images? A Benchmark Evaluating the Performance of 		Experts, Crowdsourced Non-Experts, and Algorithms." Winter conference on 		Applications in Computer Vision (WACV), 8 pp, 2015. 
+
+
+	D. Gurari, D. Theriault, M. Sameki, and M. Betke. "How to Use Level Set Methods to 	Accurately Find Boundaries of Cells in Biomedical Images? Evaluation of Six 		Methods Paired with Automated and Crowdsourced Initial Contours." The Interactive	 Medical Image Computation Workshop (MICCAI IMIC), 9 pp, 2014.
+
+	
+     (b) Donor: Margrit Betke
+     (c) Date: 17 February 2015
+
+
+
+3. Number of Instances: 20
+
+4. Number of Attributes: 4 (all nominal)
+
+5. Attribute Information:
+    -- 5 Classes
+     1 : Hough Transform Algorithm has the highest score for segmentation.
+     2 : Lankton Algorithm has the highest score for segmentation.
+     3 : Otsu Algorithm has the highest score for segmentation.
+     4 : Shi Algorithm has the highest score for segmentation.
+     5 : Watershed Algorithm has the highest score for segmentation.
+	
+    1. Background clutter: (1) low, (2) medium, (3) high
+    2. Variation between shape and intensity: (1) low, (2) medium, (3) high
+    3. Ambiguous boundary: (1) low, (2) medium, (3) high
+    4. Complicated Shape: (1) low, (2) medium, (3) high
+
+6. Number of Missing Attribute Values:   0
