@@ -68,7 +68,6 @@ public class NeuralNetLearner01 {
 		System.out.println(net.errorrate(inputvs, outputvs, 0));
 		  //learning test.
 
-
 		System.out.println("============= Test Neural Net 2 ===============");
 
 		int numTraining2 = 350;
@@ -207,7 +206,7 @@ public class NeuralNetLearner01 {
 		return;
 	}
 
-	private static void allowAccesstoNeuralNetFromNode(int[] layers,
+	static void allowAccesstoNeuralNetFromNode(int[] layers,
 			NeuralNet net) {
 		for (int i = 0; i < layers.length; ++i) {
 			List<Node> layer = net.m_layers.get(i);
@@ -229,7 +228,7 @@ public class NeuralNetLearner01 {
 				while(iter.hasNext()){
 					outCN = iter.next();
 					weight = outCN.getWeight();
-					System.out.println("layer:" + i + " , Node:" + j+ " to Node:" + k + "'s weight value: " + outCN.getWeight());
+					System.out.println("layer:(" + i + ") , Node:(" + j+ ", " + k + "),  weight: " + outCN.getWeight());
 					k++;
 				}
 				j++;
@@ -249,7 +248,7 @@ public class NeuralNetLearner01 {
 				while(iter.hasNext()){
 					inCN = iter.next();
 					weight = inCN.getWeight();
-					System.out.println("layer:" + i + " , Node:" + k+ " to Node:" + j + "'s weight value: " + inCN.getWeight());
+					System.out.println("layer:" + i + " , Node(" + k+ " to Node:" + j + "'s weight value: " + inCN.getWeight());
 					k++;
 				}
 				j++;
@@ -267,7 +266,7 @@ public class NeuralNetLearner01 {
 				List<Connection> connections = node.getInputConnectionList();
 				for(int k=0;k<connections.size()-1;k++){
 					Connection inCN = connections.get(k);
-					System.out.println("layer:" + i + " , Node:" + k+ " to Node:" + j + "'s weight value: " + inCN.getWeight());
+					System.out.println("layer:(" + i + ") , Node:(" + k+ ", " + j + "),  weight: " + inCN.getWeight());
 					
 				}
 				System.out.println();

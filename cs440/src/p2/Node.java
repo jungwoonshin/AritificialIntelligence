@@ -115,7 +115,7 @@ public class Node {
 
 		m_output = f(m_input);
 	}
-	/*
+
     // Computes error for output layer
     public void calcBetaOutput(double target, double rate) {
     	m_beta = target - m_output; 
@@ -152,22 +152,26 @@ public class Node {
 
 
     }
-	 */
-
+	 
+	
+	
+	
+	/*
 	// Computes error for output layer
 	public void calcBetaOutput(double target, double rate) {
 		m_beta = target - m_output; 
 		int size = m_input_conn.size();
 		Connection cn = null;
-		
+//		System.out.println("=============calcBetaOutput is Called===============");
+
 		for(int i=0; i<size-1;i++){
 			cn = m_input_conn.get(i);
 			cn.calcDeltaw(rate);
 			cn.updateWeight();
-//			System.out.println("=============calcBetaOutput is Called===============");
 //			NeuralNetLearner01.printAllWeightValues(neuralNet);
 		}
 	}
+	
 	public void setNeuralNet(NeuralNet neuralNet){
 		this.neuralNet = neuralNet;
 	}
@@ -191,17 +195,19 @@ public class Node {
 
 		size = m_input_conn.size();
 		Connection cn = null;
+//		System.out.println("=============calcBetaHidden is Called===============");
+
 		for(int i=0; i<size-1;i++){
 			cn = m_input_conn.get(i);
 			cn.calcDeltaw(rate);
 			cn.updateWeight();
 		}
-//		System.out.println("=============calcBetaHidden is Called===============");
 //		NeuralNetLearner01.printAllWeightValues(neuralNet);
 
 
 
 	}
+	*/
 
 
 }

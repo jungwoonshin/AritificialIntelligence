@@ -40,13 +40,15 @@ public class NeuralNetLearner {
 	private static void testNeuralNet1() {
 		System.out.println("============= Test Neural Net 1 ===============");
 
-		int numTraining1 = 500; 
+		int numTraining1 = 2; 
 
 		int[] layers = { 6, 2, 1 }; // three layers
 		NeuralNet net = new NeuralNet(layers);
-		net.connectTest();
-		//		net.connectAll();
+//		net.connectTest();
+		net.connectAll();
 		NeuralNetLearner01.printAllWeightValues(net);
+		NeuralNetLearner01.allowAccesstoNeuralNetFromNode(layers, net);
+
 
 
 		double[][] inputvs = { { 1, 1, 0, 0, 0, 0 }, { 1, 0, 1, 0, 0, 0 },
