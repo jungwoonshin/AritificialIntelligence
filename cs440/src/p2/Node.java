@@ -152,7 +152,10 @@ public class Node {
 
 
     }
-	 
+
+	public void setNeuralNet(NeuralNet neuralNet){
+		this.neuralNet = neuralNet;
+	}
 	
 	
 	
@@ -172,9 +175,6 @@ public class Node {
 		}
 	}
 	
-	public void setNeuralNet(NeuralNet neuralNet){
-		this.neuralNet = neuralNet;
-	}
 
 	// Computes error for hidden layers
 	public void calcBetaHidden(double rate) {
