@@ -232,6 +232,7 @@ public class DataProcessor {
     		output = 1;
     	}
     	
+    	
     	outputs[0] = output; 
     	return new LensData(inputs, outputs);
     }

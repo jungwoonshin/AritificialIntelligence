@@ -115,7 +115,7 @@ public class Node {
 
 		m_output = f(m_input);
 	}
-
+	/*
     // Computes error for output layer
     public void calcBetaOutput(double target, double rate) {
     	m_beta = target - m_output; 
@@ -152,14 +152,14 @@ public class Node {
 
 
     }
-
+    */
 	public void setNeuralNet(NeuralNet neuralNet){
 		this.neuralNet = neuralNet;
 	}
 	
 	
 	
-	/*
+
 	// Computes error for output layer
 	public void calcBetaOutput(double target, double rate) {
 		m_beta = target - m_output; 
@@ -207,7 +207,7 @@ public class Node {
 
 
 	}
-	*/
+
 
 
 }

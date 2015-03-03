@@ -77,7 +77,7 @@ public class NeuralNetLearner {
 
 		int numTraining2 = 350;
 
-		int[] layers2 = { 2, 2 }; // two layers
+		int[] layers2 = { 2, 2,1 }; // two layers
 		NeuralNet net2 = new NeuralNet(layers2);
 		//		net2.connectAll();
 
@@ -142,7 +142,7 @@ public class NeuralNetLearner {
 		DataProcessor dataLens = new DataProcessor("lenses.training", 1);
 		int[] layers4 = { 4, 30, 3 };
 		NeuralNet net4 = new NeuralNet(layers4);
-		net4.connectAll(1.0);
+		net4.connectAll(1/Math.sqrt(3));
 
 		double[][] inputvs4 = dataLens.m_inputvs;
 		double[][] outputvs4 = dataLens.m_outputvs;
@@ -165,12 +165,39 @@ public class NeuralNetLearner {
 
 		System.out.println(net4.errorrate(inputvs4, outputvs4, 1));
 	}
+	private static void testLenseData(int start, int end) throws FileNotFoundException {
+
+		int numTraining4 = 2000;
+
+		DataProcessor dataLens = new DataProcessor("lenses.training", 1);
+		int[] layers4 = { 4, 30, 3 };
+		NeuralNet net4 = new NeuralNet(layers4);
+		net4.connectAll(1.0/Math.sqrt(5));
+
+		double[][] inputvs4 = dataLens.m_inputvs;
+		double[][] outputvs4 = dataLens.m_outputvs;
+
+		for (int i = 0; i < numTraining4; i++) {
+			net4.train(inputvs4, outputvs4, 1);
+		}
+		double rate1 = net4.errorrate(inputvs4, outputvs4, 1);
+
+
+		dataLens = new DataProcessor("lenses.testing", 1);
+
+		net4.connectAll(0.5);
+
+		inputvs4 = dataLens.m_inputvs;
+		outputvs4 = dataLens.m_outputvs;
+
+
+		System.out.println(net4.errorrate(inputvs4, outputvs4, 1));
+	}
 
 	private static void testCreditDAta() throws FileNotFoundException {
 		System.out.println("============= Credit Data Training Data===============");
 
 		int numTrainingCredit = 2000;
-
 		DataProcessor dataCredit = new DataProcessor("crx.data.training", 0);
 		int[] layers3 = { 15, 30, 1 }; // three layers
 		NeuralNet net3 = new NeuralNet(layers3);
@@ -187,9 +214,6 @@ public class NeuralNetLearner {
 		}
 
 		System.out.println(net3.errorrate(inputvs3, outputvs3, 0));
-
-
-
 
 
 		System.out.println("============= Credit Data Testing Data===============");

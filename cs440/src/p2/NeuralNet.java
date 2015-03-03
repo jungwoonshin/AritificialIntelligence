@@ -370,7 +370,7 @@ public class NeuralNet {
 					}
 					
 					break; 
-					
+				/*	
 				case 1:
 					if (1 - target > 0.6) {
 						if (ret > 0.333) {
@@ -386,6 +386,23 @@ public class NeuralNet {
 						}
 					}
 					break;
+				*/
+				case 1:
+					if (target > 1.5) {
+						if (ret < 1.5) {
+							++accu;
+						}
+					} else if (target > 0.5) {
+						if (ret < 0.5 || ret > 1.5) {
+							++accu;
+						}
+					} else {
+						if (ret >0.5) {
+							++accu;
+						}
+					}
+					break;	
+					
 					
 				case 2:
 					if (target<0.375) {
