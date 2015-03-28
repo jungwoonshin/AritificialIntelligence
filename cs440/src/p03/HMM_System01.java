@@ -13,7 +13,7 @@ import java.util.OptionalDouble;
 import java.util.Scanner;
 
 
-public class ReadParseHmm {
+public class HMM_System01 {
 	private static final double DENOMINATOR_CONSTANT = 10e-70;
 
 	public static void main(String[] args) throws Exception {

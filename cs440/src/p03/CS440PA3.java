@@ -1,9 +1,6 @@
 package p03;
 
-
 /*
-
-
  * Hidden Markov Models and Natural Language Processing
  * CS440 Programming Assignment 3
  * 
@@ -20,165 +17,68 @@ import java.util.*;
 
 public class CS440PA3 {
 
-	public static void main(String args[]) /*throws FileNotFoundException */{
-		/*
-		System.out.println("Please enter a command with the appropriate arguments:");
-		System.out.print(System.getProperty("user.name")+"$ ");
-
-		Scanner console = new Scanner(System.in);
-		String line[] = console.nextLine().split(" ");
-
-		while(!line[0].equalsIgnoreCase("q") && !line[0].equalsIgnoreCase("quit")){
-
-			try
-			{
-
-				// If the user selects the 'recognize' function (forward algorithm)
-				if(line[0].equalsIgnoreCase("./recognize") || line[0].equalsIgnoreCase("recognize")){
-					if(line.length != 3){
-						System.out.println("Incorrect number of arguments. \nUsage is ./recognize <HMM> <observation sets>");
-					}
-					else{
-						recognize(line[1], line[2]);
-						System.out.println();
-					}
-				}
-				else if(line[0].equalsIgnoreCase("./statepath") || line[0].equalsIgnoreCase("statepath")){
-					if(line.length != 3){
-						System.out.println("Incorrect number of arguments. \nUsage is ./statepath <HMM> <observation sets>");
-					}
-					else{
-						statepath(line[1], line[2]);
-					}
-				}
-				else if(line[0].equalsIgnoreCase("./optimize") || line[0].equalsIgnoreCase("optimize")){
-					if(line.length != 4){
-						System.out.println("Incorrect number of arguments. \nUsage is ./optimize <HMM> <observation sets> <output file>");
-					}
-					else{
-						recognize(line[1], line[2]);			// First, print output for original HMM
-						optimize(line[1], line[2], line[3]);	// Apply the Baum-Welch algorithm 1 time
-					}
-				}
-				else{
-					System.out.println("\nIncorrect command. Usage is:");
-					System.out.println("./recognize <HMM> <observation sets>");
-					System.out.println("./statepath <HMM> <observation sets>");
-					System.out.println("./optimize <HMM> <observation sets> <output file>");
-					System.out.println();
-				}
-			}
-			catch(IOException e){
-				System.out.println("One of your files was not found. Check the paths and try again.");
-			}
-
-			// Print out username like a real command prompt
-			System.out.print(System.getProperty("user.name")+"$ ");
-			line = console.nextLine().split(" ");
-		}  
-
-		System.out.println("+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+");
-		 */
-
-
-
-		BufferedReader br = null;
-		/*
-		The format of an .hmm file is as follows:  
-			The first line contains integers N (number of states), M (number of observation symbols), and T (number of time steps or length of oberservation sequences).  
-			The second contains four strings 
-			SUBJECT AUXILIARY PREDICATE OBJECT ,
-			which refer to four basic English syntactic structures. Each is used to name an individual HMM state.
-			The third line contains strings
-			kids robots do can play eat chess food, 
-			that provide the vocabulary to be used in the observation sentences. 
-			Then comes a line with the text "a:", followed by the matrix a.   The matrix b and vector pi are similarly represented.  The matrix and vector elements are floating-point numbers less than or equal to 1.0.
-		 */
-		try {
-			String sCurrentLine;
-			br = new BufferedReader(new FileReader("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm"));
-			int i=0;
-			int N=0; //number of states
-			int M=0; //number of observation symbols.
-			int T=0; //number of length of sequence
-			String[] parsedSpaceString=null;
-			String[] states=null;
-			String[] list_of_vocabs=null;
-			double[][] a_matrix =null;
-			double[][] b_matrix =null;
-			double[] pi_matrix =null;
-			String[] parseSpaceAvalues=null;
-			double[][] alpha = null;
-			while ((sCurrentLine = br.readLine()) != null) {
-				System.out.println(sCurrentLine);
-				System.out.println("i: " + i);
-				parsedSpaceString = sCurrentLine.split(" ");
-				switch(i){
-				case 0:
-					N =Integer.parseInt(parsedSpaceString[0]);
-					M =Integer.parseInt(parsedSpaceString[1]);
-					T = Integer.parseInt(parsedSpaceString[2]);
-					a_matrix = new double[N][N];
-					b_matrix = new double [N][M];
-					pi_matrix = new double[N];
-					states = new String[N];
-					break;
-				case 1:
-					states = sCurrentLine.split(" ");
-					break;
-				case 2:
-					list_of_vocabs = sCurrentLine.split(" ");
-					break;
-				case 4:
-					extract_matrix_Values(0, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 5:
-					extract_matrix_Values(1, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 6:
-					extract_matrix_Values(2, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 7:
-					extract_matrix_Values(3, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 9:
-					extract_matrix_Values(0, b_matrix,sCurrentLine.split(" "));
-					break;
-				case 10:
-					extract_matrix_Values(1, b_matrix,sCurrentLine.split(" "));
-					break;
-				case 11:
-					extract_matrix_Values(2, b_matrix,sCurrentLine.split(" "));
-					break;
-				case 12:
-					extract_matrix_Values(3, b_matrix,sCurrentLine.split(" "));
-					break;
-				case 14:
-					pi_matrix[0] = Double.valueOf(parsedSpaceString[0]);
-					pi_matrix[1] = Double.valueOf(parsedSpaceString[1]);
-					pi_matrix[2] = Double.valueOf(parsedSpaceString[2]);
-					pi_matrix[3] = Double.valueOf(parsedSpaceString[3]);
-					break;
-				}
-
-				i++;
-			}
-			System.out.println("N: " + N);
-			System.out.println("M: " + M);
-			System.out.println("T: " + T);
-
-			br = new BufferedReader(new FileReader("/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs"));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (br != null)br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
-
+	public static void main(String args[]) throws FileNotFoundException /*throws FileNotFoundException */{
+		String line1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm";
+		String line2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
+		String line3 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
+		recognize(line1,line2 );
+		recognize(line1,line3 );
+//		System.out.println("Please enter a command with the appropriate arguments:");
+//		System.out.print(System.getProperty("user.name")+"$ ");
+//
+//		Scanner console = new Scanner(System.in);
+//		String line[] = console.nextLine().split(" ");
+//
+//		while(!line[0].equalsIgnoreCase("q") && !line[0].equalsIgnoreCase("quit")){
+//
+//			try
+//			{
+//
+//				// If the user selects the 'recognize' function (forward algorithm)
+//				if(line[0].equalsIgnoreCase("./recognize") || line[0].equalsIgnoreCase("recognize")){
+//					if(line.length != 3){
+//						System.out.println("Incorrect number of arguments. \nUsage is ./recognize <HMM> <observation sets>");
+//					}
+//					else{
+//						recognize(line[1], line[2]);
+//						System.out.println();
+//					}
+//				}
+//				else if(line[0].equalsIgnoreCase("./statepath") || line[0].equalsIgnoreCase("statepath")){
+//					if(line.length != 3){
+//						System.out.println("Incorrect number of arguments. \nUsage is ./statepath <HMM> <observation sets>");
+//					}
+//					else{
+//						statepath(line[1], line[2]);
+//					}
+//				}
+//				else if(line[0].equalsIgnoreCase("./optimize") || line[0].equalsIgnoreCase("optimize")){
+//					if(line.length != 4){
+//						System.out.println("Incorrect number of arguments. \nUsage is ./optimize <HMM> <observation sets> <output file>");
+//					}
+//					else{
+//						recognize(line[1], line[2]);			// First, print output for original HMM
+//						optimize(line[1], line[2], line[3]);	// Apply the Baum-Welch algorithm 1 time
+//					}
+//				}
+//				else{
+//					System.out.println("\nIncorrect command. Usage is:");
+//					System.out.println("./recognize <HMM> <observation sets>");
+//					System.out.println("./statepath <HMM> <observation sets>");
+//					System.out.println("./optimize <HMM> <observation sets> <output file>");
+//					System.out.println();
+//				}
+//			}
+//			catch(IOException e){
+//				System.out.println("One of your files was not found. Check the paths and try again.");
+//			}
+//
+//			// Print out username like a real command prompt
+//			System.out.print(System.getProperty("user.name")+"$ ");
+//			line = console.nextLine().split(" ");
+//		}  
+//
+//		System.out.println("+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+");
 	}
 
 	/*
@@ -251,7 +151,7 @@ public class CS440PA3 {
 			// The Forward algorithm
 			for(int obsSet=0; obsSet<numSets; obsSet++){
 
-				if(obsSet > 0) { System.out.println(); }
+//				if(obsSet > 0) { System.out.println(); }
 
 				int numWords = Integer.parseInt(obsIn.nextLine());
 				String words[] = obsIn.nextLine().split(" ");
@@ -266,20 +166,23 @@ public class CS440PA3 {
 				// Termination Step
 				double seqProb = 0.0;
 				for(int state=0; state<numStates; state++){ seqProb += probs[seqLen-1][state]; }
-
+				
 				double seqProb1 = 0.0;
 				for(int state=0; state<numStates; state++){ seqProb1 += probs[seqLen][state]; }
-
+				
 				double seqProb2 = 0.0;
 				for(int state=0; state<numStates; state++){ seqProb2 += probs[seqLen-2][state]; }
 
 				if(seqProb > 0.0){	// If the probability is non-zero, format it nicely
 					DecimalFormat df = new DecimalFormat("#.######");
-					System.out.print(df.format(seqProb));
+//					System.out.print(df.format(seqProb));
 				}
 				else{	// Otherwise print as 0.0
-					System.out.print(seqProb);
+//					System.out.print(seqProb);
 				}
+				double probs2[][] = backwardAlgo(HMM, vocab, words, numWords, seqLen);
+//				System.out.println("alpha: " + Arrays.deepToString(probs));
+				System.out.println("beta: " + Arrays.deepToString(probs2));
 			}
 		}finally { obsIn.close(); }
 	}
@@ -461,7 +364,7 @@ public class CS440PA3 {
 
 				double forwardProbs[][] = forwardAlgo(HMM, vocab, words, numWords, seqLen);
 				double backwardProbs[][] = backwardAlgo(HMM, vocab, words, numWords, seqLen);
-
+				
 				/*
 				System.out.println("alpha:");
 				for(int i = 0; i<numStates; i++){
@@ -469,7 +372,7 @@ public class CS440PA3 {
 						System.out.print(forwardProbs[t][i] + "\t");
 					}System.out.println();
 				}
-
+				
 				System.out.println("beta:");
 				for(int i = 0; i<numStates; i++){
 					for(int t = 1; t<=seqLen; t++){
@@ -486,15 +389,15 @@ public class CS440PA3 {
 
 				// xi[t][i][j] holds the probability of being in state <i> at time <t> and transitioning to state j at time <t+1>
 				double xi[][][] = new double[seqLen+1][numStates][numStates];
-
+				
 				// Calculate xi tables
 				for(int t=0; t<seqLen; t++){
-
+					
 					double seqProb = 0.0;
 					for(int i=0; i<numStates; i++){
 						seqProb += forwardProbs[t][i] * backwardProbs[t][i];
 					}
-
+					
 					for(int i=0; i<numStates; i++){
 						for(int j=0; j<numStates; j++){
 							xi[t][i][j]= (forwardProbs[t][i] * HMM[i].A[j] * HMM[j].B[obsIndex[t+1]] * backwardProbs[t+1][j]) / seqProb;
@@ -507,17 +410,17 @@ public class CS440PA3 {
 
 				// Calculate gamma tables
 				for(int t=1; t<seqLen; t++){
-
+					
 					double seqProb = 0.0;
 					for(int i=0; i<numStates; i++){
 						seqProb += forwardProbs[t][i] * backwardProbs[t][i];
 					}
-
+					
 					for(int state=0; state<numStates; state++){
 						gamma[t][state] = (forwardProbs[t][state] * backwardProbs[t][state]) / seqProb;						
 					}
 				}
-
+				
 				/*
 				System.out.println("gammas:");
 				for(int i = 0; i<numStates; i++){
@@ -525,8 +428,8 @@ public class CS440PA3 {
 						System.out.print(gamma[t][i] + "\t");
 					}System.out.println();
 				}
-				 */
-
+				*/
+				
 				// Re-estimation formulas
 				newPi = new double[numStates];
 				newA = new double[numStates][numStates];
@@ -543,12 +446,12 @@ public class CS440PA3 {
 
 						double num = 0.0;
 						double denominator = 0.0;
-
+						
 						for(int t=1; t<seqLen; t++){
 							num += xi[t][i][j];
 							denominator += gamma[t][i];
 						}
-
+						
 						if (denominator > 0) { newA[i][j] = num / denominator; }
 						else { newA[i][j] = HMM[i].A[j]; }
 					}
@@ -562,9 +465,9 @@ public class CS440PA3 {
 						double denom = 0.0;
 
 						for(int t=1; t<seqLen; t++){
-
+							
 							denom += gamma[t][i];
-
+							
 							// only add to numerator if o<t> = k
 							if(obsIndex[t] == k) { num += gamma[t][i]; }
 						}
@@ -623,7 +526,7 @@ public class CS440PA3 {
 				}
 			}
 		}finally { obsIn.close(); }
-
+		
 		// Finally, output the probability of the sequence, using the optimized HMM
 		System.out.print("  ");
 		recognize(outputFile, obSetsFile);
@@ -665,9 +568,9 @@ public class CS440PA3 {
 				for(int i=0; i<numStates; i++){
 					sum += probs[t][i] * HMM[i].A[j];
 				}
-
+				
 				if(HMM[j].B[obsIndex[t+1]] == 0) {}
-
+				
 				probs[t+1][j] = sum * HMM[j].B[obsIndex[t+1]];
 			}
 		}
@@ -695,7 +598,7 @@ public class CS440PA3 {
 		// Initialize end probabilities to 1 for t = T
 		for(int state=0; state<numStates; state++){
 			probs[seqLen][state] = 1;
-		}
+			}
 
 		// Induction Step: t = T-1 ... 1
 		for(int t=seqLen-1; t>=0; t--){				// use interval seqLen-2 ... 0 because it is used as an array index
@@ -705,6 +608,7 @@ public class CS440PA3 {
 				for(int j=0; j<numStates; j++){
 					sum += HMM[state].A[j] * HMM[j].B[obsIndex[t+1]] * probs[t+1][j];
 				}
+				System.out.println("beta: "+ Arrays.deepToString(probs));
 				probs[t][state] = sum;
 			}
 		}
@@ -831,16 +735,5 @@ public class CS440PA3 {
 			this.p = p;
 			this.q = q;
 		}
-	}
-
-
-	private static void extract_matrix_Values(int i, double[][] a_matrix,
-			String[] parseSpaceAvalues) {
-		//		System.out.println("parseSpaceAvalues[0].substring(1):  " + parseSpaceAvalues[0].substring(1));
-		//		System.out.println("Integer.valueOf(parseSpaceAvalues[1]): "+ Double.valueOf(parseSpaceAvalues[1]));
-		a_matrix[i][0] = Double.valueOf(parseSpaceAvalues[0]);
-		a_matrix[i][1] = Double.valueOf(parseSpaceAvalues[1]);
-		a_matrix[i][2] = Double.valueOf(parseSpaceAvalues[2]);
-		a_matrix[i][3] = Double.valueOf(parseSpaceAvalues[3]);
 	}
 }

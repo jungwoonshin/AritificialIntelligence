@@ -1,0 +1,15 @@
+4 8 4
+SUBJECT AUXILIARY PREDICATE OBJECT 
+do can computers students movies develop play games 
+a:
+0 1 0 0 
+1 0 0 0 
+0 0 0 1 
+0 0 0 1 
+b:
+0.5 0.5 0 0 0 0 0 0 
+0 0 0.666667 0.333333 0 0 0 0 
+0 0 0 0 0.5 0.5 0 0 
+0.1 0.2 0 0 0 0 0.3 0.4 
+pi:
+� � � � 
