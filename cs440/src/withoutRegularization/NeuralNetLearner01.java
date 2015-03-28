@@ -12,7 +12,7 @@
  * 
  */
 
-package p2;
+package withoutRegularization;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

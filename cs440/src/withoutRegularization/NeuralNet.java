@@ -12,7 +12,7 @@
  * 
  */
 
-package p2;
+package withoutRegularization;
 
 import java.util.Iterator;
 import java.util.List;
@@ -86,7 +86,6 @@ public class NeuralNet {
 			}
 			pre_layer = cur_layer;
 		}
-		
 	}
 
 	public void connectTest() {
@@ -178,11 +177,7 @@ public class NeuralNet {
 				// Calculate delta of target node using rate parameter r
 				node.calcBetaOutput(target, rate);
 			}
-			
-			
-			
-			/*
-			
+		
 			// 2) Compute Beta for "hidden layer" nodes
 			List<Node> hiddenLayer;
 			if (m_layers.size() > 2) {
@@ -213,7 +208,7 @@ public class NeuralNet {
 					}
 				}
 			}
-			*/
+
 			
 			
 			
@@ -225,7 +220,7 @@ public class NeuralNet {
 		
 		
 		
-		/*
+
 		// 4) Add up the weight changes for all inputs and change the weights
 		for (int j = m_layers.size() - 1; j >= 0; j--) {
 			List<Node> updateLayer = m_layers.get(j);
@@ -237,7 +232,7 @@ public class NeuralNet {
 			}
 		}
 		
-		*/
+
 	}	
 
 
@@ -354,17 +349,17 @@ public class NeuralNet {
 			double[] results = evaluate(inputs3);
 			double target = outputvs3[i][outputvs3[i].length - 1];
 			double ret = results[results.length - 1];
-//			System.out.println("target is " + target + ", ret is " + ret);
+			System.out.println("target is " + target + ", ret is " + ret);
 
 			switch (id) {
 				default: 
 				case 0: 
-					if (1.1 - target > 0.5) { // false
-						if (ret > 0.5) { // decide to be true
+					if (target >= 0.5) { // false
+						if (ret < 0.5) { // decide to be true
 							++accu;
 						}
 					} else { // true
-						if (ret < 0.5) { // decide to be false
+						if (ret >=  0.5) { // decide to be false
 							++accu;
 						}
 					}

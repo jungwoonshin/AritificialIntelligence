@@ -4,7 +4,7 @@
  * 
  */
 
-package p2;
+package withoutRegularization;
 
 
 public class Connection {
@@ -43,7 +43,9 @@ public class Connection {
     public void calcDeltaw(double rate) {
 //    	System.out.println(" m_to.getBeta(): " +  m_to.getBeta());
     	// R * O_I * O_J * (1-O_J) * Beta value of output layer's node
-    	m_deltaw += rate * m_from.getOutput() * m_to.getOutput() * (1 - m_to.getOutput()) * m_to.getBeta();
+    	m_deltaw += rate * m_from.getOutput() * m_to.getOutput() 
+    			* (1 - m_to.getOutput()) * m_to.getBeta();
+    	
     }
     
 

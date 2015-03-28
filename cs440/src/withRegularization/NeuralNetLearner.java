@@ -12,7 +12,7 @@
  * 
  */
 
-package p2;
+package withRegularization;
 
 import java.io.FileNotFoundException;
 
@@ -30,7 +30,7 @@ public class NeuralNetLearner {
 		testNeuralNet2();
 		testCreditDAta();
 		testLenseData();
-		testBubilData(7);
+		testBubilData(3);
 
 
 
@@ -46,8 +46,8 @@ public class NeuralNetLearner {
 		NeuralNet net = new NeuralNet(layers);
 //		net.connectTest();
 		net.connectAll();
-		NeuralNetLearner01.printAllWeightValues(net);
-		NeuralNetLearner01.allowAccesstoNeuralNetFromNode(layers, net);
+//		NeuralNetLearner01.printAllWeightValues(net);
+//		NeuralNetLearner01.allowAccesstoNeuralNetFromNode(layers, net);
 
 
 
@@ -93,12 +93,12 @@ public class NeuralNetLearner {
 
 	private static void testBubilData(int test_layer_size) throws FileNotFoundException {
 		int k= test_layer_size;
-		double j=0.25;
+		double j=1;
 
-		//				System.out.println("============= BUBIL Data Training Data===============");
+		//System.out.println("============= BUBIL Data Training Data===============");
 
 
-		int numTraining5 = 4000;
+		int numTraining5 = 2000;
 
 		DataProcessor dataBubils = new DataProcessor("BUBIL.training", 2);
 		int[] layers5 = { 4, 2,5};
