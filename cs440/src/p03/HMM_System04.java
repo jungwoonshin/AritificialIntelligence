@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.OptionalDouble;
 
 
-public class HMM_System {
+public class HMM_System04 {
 	private static final double DENOMINATOR_CONSTANT = 10e-10;
 
 	public static void main(String[] args) throws Exception {
@@ -28,6 +28,7 @@ public class HMM_System {
 		String[] parseSpaceAvalues=null;
 		@SuppressWarnings("unused")
 		double[][] alpha;
+
 
 		try {
 
@@ -105,7 +106,15 @@ public class HMM_System {
 			String obsFilename2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
 			runObsFile(obsFilename2, N, M,list_of_vocabs, a_matrix, b_matrix, pi_matrix);
 
+
+
+
+
 			//optimize("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm", "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs","/Users/jungwoonshin/git/cs440/cs440/src/p03/output.txt");
+
+
+
+
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -195,11 +204,47 @@ public class HMM_System {
 
 			System.out.println("\n\n===============Start of Baum-Welch Algorithm==============================");
 
-			
-			for(int i=0; i<1000; i++){
-				runBaumWelch(N, M, a_matrix, b_matrix, pi_matrix, alpha, beta,
-						numWords, obsIndex);
+			xi = getXI(N, a_matrix, b_matrix, alpha, beta, numWords, obsIndex);
+			System.out.println("xi: "+ Arrays.deepToString(xi));
+			gamma = getGamma(N, numWords, alpha, beta);
+			System.out.println("gamma: "+ Arrays.deepToString(gamma));
+
+			for(int i=0; i<N;i++){
+				pi_matrix[i] = gamma[0][i];
 			}
+			System.out.println("pi_matrix: " + Arrays.toString(pi_matrix));
+
+			double[][] trained_a_matrix = new double[N][N];
+			//			trained_a_matrix = a_matrix;
+			for(int i=0; i<N;i++){
+				for(int j=0;j<N;j++){
+					for(int t=0; t<numWords-1; t++){
+						trained_a_matrix[i][j] += xi[t][i][j];
+					}
+				}
+			}
+
+			for(int i=0;i<N;i++){
+				for(int j=0; j<N;j++){
+					double denom = 0.0;
+					for(int t=0; t<numWords-1; t++){
+						denom+=gamma[t][i];
+					}
+					if(denom==0.) denom = DENOMINATOR_CONSTANT;
+					trained_a_matrix[i][j]/=denom;
+					//					if(trained_a_matrix[i][j]>1.0) trained_a_matrix[i][j]=1.0;
+
+				}
+			}
+
+			//			System.out.println("trained_a_matrix: " + Arrays.deepToString(trained_a_matrix));
+			//			a_matrix = trained_a_matrix;
+			double[][] trained_b_matrix = new double[N][M];
+
+
+
+
+
 
 
 			System.out.println("===============End of Viterabi Algorithm==============================");
@@ -207,76 +252,10 @@ public class HMM_System {
 		br.close();
 	}
 
-	private static void runBaumWelch(int N, int M, double[][] a_matrix,
-			double[][] b_matrix, double[] pi_matrix, double[][] alpha,
-			double[][] beta, int numWords, int[] obsIndex) {
-		double[][][] xi;
-		double[][] gamma;
-		xi = getXI(N, a_matrix, b_matrix, alpha, beta, numWords, obsIndex);
-		System.out.println("xi: "+ Arrays.deepToString(xi));
-		gamma = getGamma(N, numWords, alpha, beta);
-		System.out.println("gamma: "+ Arrays.deepToString(gamma));
-
-		for(int i=0; i<N;i++){
-			pi_matrix[i] = gamma[0][i];
-		}
-		System.out.println("pi_matrix: " + Arrays.toString(pi_matrix));
-
-		double[][] trained_a_matrix = new double[N][N];
-		//			trained_a_matrix = a_matrix;
-		for(int i=0; i<N;i++){
-			for(int j=0;j<N;j++){
-				for(int t=0; t<numWords-1; t++){
-					trained_a_matrix[i][j] += xi[t][i][j];
-				}
-			}
-		}
-
-		for(int i=0;i<N;i++){
-			for(int j=0; j<N;j++){
-				double denom = 0.0;
-				for(int t=0; t<numWords-1; t++){
-					denom+=gamma[t][i];
-				}
-				if(denom==0.) denom = DENOMINATOR_CONSTANT;
-				trained_a_matrix[i][j]/=denom;
-				//					if(trained_a_matrix[i][j]>1.0) trained_a_matrix[i][j]=1.0;
-
-			}
-		}
-		a_matrix = trained_a_matrix;
-		System.out.println("trained_a_matrix: " + Arrays.deepToString(trained_a_matrix));
-		
-		double[][] trained_b_matrix = new double[N][M];
-
-		for(int i=0; i<N;i++){
-			for(int m=0;m<M;m++){
-				for(int t=0; t<numWords; t++){
-					if(obsIndex[t]==m){
-						trained_b_matrix[i][m]+=gamma[t][i];
-					}
-				}
-			}
-		}
-		for(int i=0; i<N;i++){
-			for(int m=0;m<M;m++){
-				double denom =0.0;
-				for(int t=0; t<numWords; t++){
-					denom+= gamma[t][i];
-				}
-				if(denom==0.0)denom = DENOMINATOR_CONSTANT;
-				trained_b_matrix[i][m]/=denom;
-			}
-		}
-		b_matrix = trained_b_matrix;
-		System.out.println("trained_b_matrix: " + Arrays.deepToString(trained_b_matrix));
-	}
-
 	private static double[][] getGamma(int N,  int numWords, double[][] alpha, double[][] beta) {
 		double[][] gamma;
 		gamma = new double[numWords][N];
-		/*	
-		//tutorial version
+		/*
 		for(int t=0; t<numWords;t++){
 			for(int i=0; i<N;i++){
 				for(int j=0;j<N;j++){
@@ -284,7 +263,6 @@ public class HMM_System {
 				}
 			}
 		}*/
-
 		//wikipedia version
 		for(int t=0; t<numWords;t++){
 			for(int i=0; i<N;i++){
@@ -333,7 +311,6 @@ public class HMM_System {
 			}
 		}
 		 */
-
 		//wiki version
 		double denominator = 0.;
 		for(int k=0;k<N;k++){

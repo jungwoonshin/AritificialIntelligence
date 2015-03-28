@@ -60,20 +60,27 @@ public class testWrittenHomework02 {
 	private static double[][] forwardProcedure(int N, double[][] a_matrix,
 			double[][] b_matrix, double[] pi_matrix, int numWords,
 			int[] obsIndex) {
+		
+
 		double[][] alpha;
 		alpha = new double[numWords][N];
 		//Step : t=1
 		for(int state=0;state<N;state++){
 			//intialize pi prob.
 			//initalize step t=1
-			alpha[0][state] = pi_matrix[state]*b_matrix[state][0];
+			alpha[0][state] = pi_matrix[state]*b_matrix[state][obsIndex[0]];
 		}
 		//Step : t=2,
 		for(int t=1; t<numWords;t++){
 			for(int l=0; l<N;l++){
 				for(int k =0;k<N;k++){
-					alpha[t][l] += alpha[t-1][k] * a_matrix[k][l] * b_matrix[l][1];
+					alpha[t][l] += alpha[t-1][k] * a_matrix[k][l];
 				}
+			}
+		}
+		for(int t=1; t<numWords;t++){
+			for(int j=0; j<N;j++){
+				alpha[t][j]*= b_matrix[j][obsIndex[t]];
 			}
 		}
 		System.out.println("alpha: "+ Arrays.deepToString(alpha));
