@@ -96,19 +96,20 @@ public class HMM_System {
 
 				i++;
 			}
-			//
-			//			System.out.println("N: " + N);
-			//			System.out.println("M: " + M);
-			//			System.out.println("T: " + T);
-			//			System.out.println("a_matrix: " + Arrays.deepToString(a_matrix));
-			//			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
-			//			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
-			//			System.out.println("==========================================End of Read File==========================================");
+			System.out.println("==========================================Beginning of Read File==========================================");
+
+			System.out.println("N: " + N);
+			System.out.println("M: " + M);
+			System.out.println("T: " + T);
+			System.out.println("a_matrix: " + Arrays.deepToString(a_matrix));
+			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
+			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
+			System.out.println("==========================================End of Read File==========================================");
 
 			String obsFilename1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
-			runObsFile(obsFilename1, N, list_of_vocabs, a_matrix, b_matrix, pi_matrix);
+			runObsFile(obsFilename1, N,M, list_of_vocabs, a_matrix, b_matrix, pi_matrix);
 			String obsFilename2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
-			runObsFile(obsFilename2, N, list_of_vocabs, a_matrix, b_matrix, pi_matrix);
+			runObsFile(obsFilename2, N, M,list_of_vocabs, a_matrix, b_matrix, pi_matrix);
 
 
 
@@ -132,7 +133,7 @@ public class HMM_System {
 		}
 	}
 
-	private static void runObsFile(String obsFilename, int N, String[] list_of_vocabs,
+	private static void runObsFile(String obsFilename, int N, int M,String[] list_of_vocabs,
 			double[][] a_matrix, double[][] b_matrix, double[] pi_matrix)
 					throws FileNotFoundException, IOException {
 		BufferedReader br=new BufferedReader(new FileReader(obsFilename));
@@ -162,6 +163,13 @@ public class HMM_System {
 				//				System.out.println("obsIndex["+j+"]: " + obsIndex[j] );
 			}
 
+			//			String line1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm";
+			//			String line2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
+			//			String line3 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
+			////			recognize(line1,line2 );
+			////			recognize(line1,line3 );
+			//			optimize(line1, line3, "/Users/jungwoonshin/git/cs440/cs440/src/p03/output.txt");
+
 
 
 
@@ -169,8 +177,8 @@ public class HMM_System {
 					obsIndex);
 			beta = getBeta(N, a_matrix, b_matrix, numWords, obsIndex);
 
-			//			System.out.println("alpha: "+ Arrays.deepToString(alpha));
-			//			System.out.println("beta: "+ Arrays.deepToString(beta));
+			System.out.println("alpha: "+ Arrays.deepToString(alpha));
+			System.out.println("beta: "+ Arrays.deepToString(beta));
 
 			double Answer = 0.0;
 			for(int state=0; state<N; state++){ Answer += alpha[numWords-1][state]; }
@@ -204,47 +212,88 @@ public class HMM_System {
 			xi = getXI(N, a_matrix, b_matrix, alpha, beta, numWords, obsIndex);
 			System.out.println("xi: "+ Arrays.deepToString(xi));
 			gamma = getGamma(N, xi, numWords);
+			System.out.println("gamma: "+ Arrays.deepToString(gamma));
 
 			for(int i=0; i<N;i++){
 				pi_matrix[i] = gamma[0][i];
 			}
-
 			System.out.println("pi_matrix: " + Arrays.toString(pi_matrix));
 
+
+			double[][] trained_a_matrix = new double[N][N];
+			//			trained_a_matrix = a_matrix;
 			for(int i=0; i<N;i++){
 				for(int j=0;j<N;j++){
 					for(int t=0; t<numWords-1; t++){
-						a_matrix[i][j] += xi[t][i][j];
+						trained_a_matrix[i][j] += xi[t][i][j];
 					}
 				}
 			}
-
+			/*
 			double denominator=0.;
 			for(int i=0; i<N;i++){
 				for(int j=0;j<N;j++){
-
 					denominator=0.0;
-
 					for(int t=0; t<numWords-1; t++){
 						for(int a=0; a<N;a++){
 							denominator+= gamma[t][a];	
 						}
 					}
 					if(denominator==0.) denominator = DENOMINATOR_CONSTANT;
-					a_matrix[i][j] /= denominator;
+					trained_a_matrix[i][j] /= denominator;
 
-					if(a_matrix[i][j]>1.0) a_matrix[i][j]=1.0;
+					if(trained_a_matrix[i][j]>1.0) trained_a_matrix[i][j]=1.0;
 
 				}
 			}
-			System.out.println("a_matrix: " + Arrays.deepToString(a_matrix));
+			*/
+			
+			
+			double denom = 0.0;
+			for(int t=0; t<numWords-1; t++){
+				denom+=gamma[t][0];
+			}
+			trained_a_matrix[0][1]/=denom;
+			
+			
+			
+			
+			
+			System.out.println("trained_a_matrix: " + Arrays.deepToString(trained_a_matrix));
+			a_matrix = trained_a_matrix;
+
+			double[][] trained_b_matrix = new double[N][M];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			System.out.println("===============End of Viterabi Algorithm==============================");
-
-
 		}
-
-
-
 		br.close();
 	}
 
@@ -254,7 +303,7 @@ public class HMM_System {
 	private static double[][] getGamma(int N, double[][][] xi, int numWords) {
 		double[][] gamma;
 		gamma = new double[numWords][N];
-		for(int t=0; t<numWords-1;t++){
+		for(int t=0; t<numWords;t++){
 			for(int i=0; i<N;i++){
 				for(int j=0;j<N;j++){
 					gamma[t][i] += xi[t][i][j];

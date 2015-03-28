@@ -1,5 +1,7 @@
 package p03;
 
+
+
 /*
  * Hidden Markov Models and Natural Language Processing
  * CS440 Programming Assignment 3
@@ -17,12 +19,21 @@ import java.util.*;
 
 public class CS440PA3 {
 
-	public static void main(String args[]) throws FileNotFoundException /*throws FileNotFoundException */{
+	public static void main(String args[]) throws Exception{
+//
+		
+		
 		String line1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm";
 		String line2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
 		String line3 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
 		recognize(line1,line2 );
-		recognize(line1,line3 );
+//		statepath(line1, line2);
+//		recognize(line1,line3 );
+		optimize(line1, line2, "/Users/jungwoonshin/git/cs440/cs440/src/p03/output1.txt");
+
+		optimize(line1, line3, "/Users/jungwoonshin/git/cs440/cs440/src/p03/output2.txt");
+		
+		
 //		System.out.println("Please enter a command with the appropriate arguments:");
 //		System.out.print(System.getProperty("user.name")+"$ ");
 //
@@ -77,8 +88,8 @@ public class CS440PA3 {
 //			System.out.print(System.getProperty("user.name")+"$ ");
 //			line = console.nextLine().split(" ");
 //		}  
-//
-//		System.out.println("+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+");
+
+		System.out.println("+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+");
 	}
 
 	/*
@@ -88,7 +99,7 @@ public class CS440PA3 {
 	 * observation symbols, and returns an array of these probabilities for each set in the file
 	 * containing observation sets.
 	 */
-	public static void recognize(String HMMFile, String obSetsFile) throws FileNotFoundException{
+	public static void recognize(String HMMFile, String obSetsFile) throws IOException{
 
 		int numStates;
 		int numSymbols;
@@ -96,46 +107,45 @@ public class CS440PA3 {
 		String vocab[];
 		State HMM[];
 
-		FileReader f = new FileReader(HMMFile);
-		Scanner hmmIn = null;
+//		Scanner hmmIn = null;
 
 		// Read information from HMM file
 		try {
 
-			hmmIn = new Scanner(new BufferedReader(f));
-			hmmIn.useLocale(Locale.US);
+			String sCurrentLine;
+			BufferedReader br = new BufferedReader(new FileReader("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm"));
+
 
 			// The first line contains integers N (number of states), M (number of observation symbols)
 			// and T (number of time steps or length of observation sequences).
-			String str[] = hmmIn.nextLine().split(" ");
+			String str[] = br.readLine().split(" ");
 			numStates = Integer.parseInt(str[0]);
 			numSymbols = Integer.parseInt(str[1]);
 			T = Integer.parseInt(str[2]);
 
 			// The second line contains the name of the states
-			String stateNames[] = hmmIn.nextLine().split(" ");
+			String stateNames[] = br.readLine().split(" ");
 
 			// The third line contains the vocabulary to be used in the observation sentences
 			vocab = new String[numSymbols]; 
-			vocab = hmmIn.nextLine().split(" ");
+			vocab = br.readLine().split(" ");
 
-			hmmIn.nextLine();							// skip over the text "a:"
+			br.readLine();							// skip over the text "a:"
 			String A[] = new String[numStates];		// A holds the transition probabilities to each state
-			for(int i=0; i<numStates; i++){ A[i] = hmmIn.nextLine(); }
+			for(int i=0; i<numStates; i++){ A[i] = br.readLine(); }
 
-			hmmIn.nextLine();							// skip over the text "b:"
+			br.readLine();							// skip over the text "b:"
 			String B[] = new String[numStates];		// B holds the observation probabilities of vocab words in each state
-			for(int i=0; i<numStates; i++){ B[i] = hmmIn.nextLine(); }
-
-			hmmIn.nextLine();							// skip over the text "pi:"
-			String pi[] = hmmIn.nextLine().split(" ");				// Starting probabilities
-
+			for(int i=0; i<numStates; i++){ B[i] = br.readLine(); }
+			
+			br.readLine();							// skip over the text "pi:"
+			String pi[] = br.readLine().split(" ");				// Starting probabilities
 			// Initialize each state 
 			HMM = new State[numStates];
 			for(int i=0; i<numStates; i++){
 				HMM[i] = new State(stateNames[i], i, A[i], B[i], Double.parseDouble(pi[i]));
 			}
-		}finally { hmmIn.close(); }
+		}finally {}
 
 		// Read in observation sets
 		FileReader f2 = new FileReader(obSetsFile);
@@ -151,7 +161,7 @@ public class CS440PA3 {
 			// The Forward algorithm
 			for(int obsSet=0; obsSet<numSets; obsSet++){
 
-//				if(obsSet > 0) { System.out.println(); }
+				if(obsSet > 0) { System.out.println(); }
 
 				int numWords = Integer.parseInt(obsIn.nextLine());
 				String words[] = obsIn.nextLine().split(" ");
@@ -175,14 +185,15 @@ public class CS440PA3 {
 
 				if(seqProb > 0.0){	// If the probability is non-zero, format it nicely
 					DecimalFormat df = new DecimalFormat("#.######");
-//					System.out.print(df.format(seqProb));
+					System.out.print(df.format(seqProb));
 				}
 				else{	// Otherwise print as 0.0
-//					System.out.print(seqProb);
+					System.out.print(seqProb);
 				}
-				double probs2[][] = backwardAlgo(HMM, vocab, words, numWords, seqLen);
 //				System.out.println("alpha: " + Arrays.deepToString(probs));
-				System.out.println("beta: " + Arrays.deepToString(probs2));
+//				double beta[][] = backwardAlgo(HMM, vocab, words, numWords, seqLen);
+// 				System.out.println("beta: " + Arrays.deepToString(beta));
+
 			}
 		}finally { obsIn.close(); }
 	}
@@ -192,7 +203,7 @@ public class CS440PA3 {
 	 * and a file containing observation sets as its parameters. It then uses the Viterbi algorithm
 	 * to determine (and output) the path of states with the highest probability 
 	 */
-	public static void statepath(String HMMFile, String obSetsFile) throws FileNotFoundException{
+	public static void statepath(String HMMFile, String obSetsFile) throws IOException{
 
 		int numStates;
 		int numSymbols;
@@ -200,62 +211,57 @@ public class CS440PA3 {
 		String vocab[];
 		State HMM[];
 
-		FileReader f = new FileReader(HMMFile);
-		Scanner hmmIn = null;
 
 		// Read information from HMM file
 		try {
+			BufferedReader br = new BufferedReader(new FileReader("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm"));
 
-			hmmIn = new Scanner(new BufferedReader(f));
-			hmmIn.useLocale(Locale.US);
 
 			// The first line contains integers N (number of states), M (number of observation symbols)
 			// and T (number of time steps or length of observation sequences).
-			String str[] = hmmIn.nextLine().split(" ");
+			String str[] = br.readLine().split(" ");
 			numStates = Integer.parseInt(str[0]);
 			numSymbols = Integer.parseInt(str[1]);
 			T = Integer.parseInt(str[2]);
 
 			// The second line contains the name of the states
-			String stateNames[] = hmmIn.nextLine().split(" ");
+			String stateNames[] = br.readLine().split(" ");
 
 			// The third line contains the vocabulary to be used in the observation sentences
 			vocab = new String[numSymbols]; 
-			vocab = hmmIn.nextLine().split(" ");
+			vocab = br.readLine().split(" ");
 
-			hmmIn.nextLine();						// skip over the text "a:"
+			br.readLine();						// skip over the text "a:"
 			String A[] = new String[numStates];		// A holds the transition probabilities to each state
-			for(int i=0; i<numStates; i++){ A[i] = hmmIn.nextLine(); }
+			for(int i=0; i<numStates; i++){ A[i] = br.readLine(); }
 
-			hmmIn.nextLine();						// skip over the text "b:"
+			br.readLine();						// skip over the text "b:"
 			String B[] = new String[numStates];		// B holds the observation probabilities of vocab words in each state
-			for(int i=0; i<numStates; i++){ B[i] = hmmIn.nextLine(); }
+			for(int i=0; i<numStates; i++){ B[i] = br.readLine(); }
 
-			hmmIn.nextLine();							// skip over the text "pi:"
-			String pi[] = hmmIn.nextLine().split(" ");	// Starting probabilities
+			br.readLine();							// skip over the text "pi:"
+			String pi[] = br.readLine().split(" ");	// Starting probabilities
 
 			// Initialize each state 
 			HMM = new State[numStates];
 			for(int i=0; i<numStates; i++){
 				HMM[i] = new State(stateNames[i], i, A[i], B[i], Double.parseDouble(pi[i]));
 			}
-		}finally { hmmIn.close(); }
+		}finally { }
 
 		// Read in observation sets
-		FileReader f2 = new FileReader(obSetsFile);
-		Scanner obsIn = null;
 
 		try{
 
-			obsIn = new Scanner(new BufferedReader(f2));
-			obsIn.useLocale(Locale.US);
+			BufferedReader br = new BufferedReader(new FileReader(obSetsFile));
 
-			int numSets = Integer.parseInt(obsIn.nextLine());
+
+			int numSets = Integer.parseInt(br.readLine());
 
 			for(int obsSet=0; obsSet<numSets; obsSet++){
 
-				int numWords = Integer.parseInt(obsIn.nextLine());
-				String words[] = obsIn.nextLine().split(" ");
+				int numWords = Integer.parseInt(br.readLine());
+				String words[] = br.readLine().split(" ");
 				int seqLen;
 
 				if(numWords >= T){ seqLen = numWords+1; }
@@ -285,10 +291,10 @@ public class CS440PA3 {
 				}
 				System.out.println();
 			}
-		}finally { obsIn.close(); }
+		}finally { }
 	}
 
-	public static void optimize(String HMMFile, String obSetsFile, String outputFile) throws FileNotFoundException{
+	public static void optimize(String HMMFile, String obSetsFile, String outputFile) throws IOException{
 
 		int numStates;
 		int numSymbols;
@@ -510,13 +516,17 @@ public class CS440PA3 {
 					// Write the observation probability matrix B
 					out.write("b:\n");
 					for(int i=0; i<numStates; i++){
-						for(int j=0; j<numSymbols; j++){ out.write(df.format(newB[i][j]) + " "); }
+//						for(int j=0; j<numSymbols; j++){ out.write(df.format(newB[i][j]) + " "); }
+						for(int j=0; j<numSymbols; j++){ out.write(newB[i][j] + " "); }
+
 						out.write("\n");
 					}
 
 					// Write the starting probabilities of each state
 					out.write("pi:\n");
-					for(int i=0; i<numStates; i++){ out.write(df.format(newPi[i]) + " "); }
+//					for(int i=0; i<numStates; i++){ out.write(df.format(newPi[i]) + " "); }
+					for(int i=0; i<numStates; i++){ out.write(newPi[i] + " "); }
+
 					out.write("\n");
 
 					//Close the output stream
@@ -608,7 +618,6 @@ public class CS440PA3 {
 				for(int j=0; j<numStates; j++){
 					sum += HMM[state].A[j] * HMM[j].B[obsIndex[t+1]] * probs[t+1][j];
 				}
-				System.out.println("beta: "+ Arrays.deepToString(probs));
 				probs[t][state] = sum;
 			}
 		}
