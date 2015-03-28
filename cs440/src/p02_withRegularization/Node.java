@@ -8,7 +8,7 @@
  * 
  */
 
-package withoutRegularization;
+package p02_withRegularization;
 
 import java.util.ArrayList;
 import java.util.Iterator;

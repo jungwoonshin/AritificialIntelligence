@@ -1,4 +1,4 @@
-package withoutRegularization;
+package p02_withRegularization;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

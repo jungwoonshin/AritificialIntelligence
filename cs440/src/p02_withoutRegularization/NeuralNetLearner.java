@@ -12,7 +12,7 @@
  * 
  */
 
-package withRegularization;
+package p02_withoutRegularization;
 
 import java.io.FileNotFoundException;
 
@@ -30,7 +30,7 @@ public class NeuralNetLearner {
 		testNeuralNet2();
 		testCreditDAta();
 		testLenseData();
-		testBubilData(3);
+		testBubilData(7);
 
 
 
@@ -46,8 +46,8 @@ public class NeuralNetLearner {
 		NeuralNet net = new NeuralNet(layers);
 //		net.connectTest();
 		net.connectAll();
-//		NeuralNetLearner01.printAllWeightValues(net);
-//		NeuralNetLearner01.allowAccesstoNeuralNetFromNode(layers, net);
+		NeuralNetLearner01.printAllWeightValues(net);
+		NeuralNetLearner01.allowAccesstoNeuralNetFromNode(layers, net);
 
 
 

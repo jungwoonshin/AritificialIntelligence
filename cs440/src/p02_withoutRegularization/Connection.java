@@ -4,7 +4,7 @@
  * 
  */
 
-package new01;
+package p02_withoutRegularization;
 
 
 public class Connection {

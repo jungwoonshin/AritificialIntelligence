@@ -12,7 +12,7 @@
  * 
  */
 
-package withoutRegularization;
+package p02_working;
 
 import java.util.Iterator;
 import java.util.List;
@@ -208,18 +208,7 @@ public class NeuralNet {
 					}
 				}
 			}
-
-			
-			
-			
-			
 		}
-		
-		
-		
-		
-		
-		
 
 		// 4) Add up the weight changes for all inputs and change the weights
 		for (int j = m_layers.size() - 1; j >= 0; j--) {
@@ -239,6 +228,11 @@ public class NeuralNet {
 	// r: rate parameter
 	public void train2(double[][] inputvs, double[][] outputvs, double r)
 			throws RuntimeException {
+		double[] inputs = inputvs[0];
+		double[] results = evaluate(inputs); // forward prop
+
+		
+		/*
 
 		for (int i = 0; i < inputvs.length; ++i) {
 			double[] inputs = inputvs[i];
@@ -285,6 +279,7 @@ public class NeuralNet {
 				}
 			}
 		}
+		*/
 	}
 	
 	// This method shall change the input and output of each node.

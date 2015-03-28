@@ -8,7 +8,7 @@
  * 
  */
 
-package withRegularization;
+package p02_working;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -206,6 +206,12 @@ public class Node {
 
 
 
+	}
+
+	@Override
+	public String toString() {
+		return "Node [m_layer=" + m_layer + ", m_pos=" + m_pos + ", m_output="
+				+ NeuralNetLearner01.printTwoDigits(m_output) + ", m_input=" + NeuralNetLearner01.printTwoDigits(m_input) + "]";
 	}
 
 

@@ -4,7 +4,7 @@
  * 
  */
 
-package withoutRegularization;
+package p02_withRegularization;
 
 
 public class Connection {
@@ -44,7 +44,11 @@ public class Connection {
 //    	System.out.println(" m_to.getBeta(): " +  m_to.getBeta());
     	// R * O_I * O_J * (1-O_J) * Beta value of output layer's node
     	m_deltaw += rate * m_from.getOutput() * m_to.getOutput() 
-    			* (1 - m_to.getOutput()) * m_to.getBeta();
+    			* (1 - m_to.getOutput()) * m_to.getBeta()
+    			+1/15.0*m_weight;
+//    	m_deltaw += rate * m_from.getOutput() * m_to.getOutput() 
+//    			* (1 - m_to.getOutput()) * m_to.getBeta();
+    			
     	
     }
     

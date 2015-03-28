@@ -1,4 +1,4 @@
-package new01;
+package p02_working;
 
 public class TestClass {
 	public static void main(String[] args) {

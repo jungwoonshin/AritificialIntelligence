@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.OptionalDouble;
 
 
-public class ReadParseHmm {
+public class ReadParseHmm04 {
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = null;
 		/*

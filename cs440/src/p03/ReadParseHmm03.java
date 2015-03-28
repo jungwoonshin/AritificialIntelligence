@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.OptionalDouble;
 
 
-public class ReadParseHmm {
+public class ReadParseHmm03 {
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = null;
 		/*
@@ -40,10 +40,8 @@ public class ReadParseHmm {
 			br = new BufferedReader(new FileReader("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm"));
 
 			while ((sCurrentLine = br.readLine()) != null) {
-				/*
 				System.out.println("i: " + i);
 				System.out.println("sCurrentLine: " + sCurrentLine);
-				*/
 				parsedSpaceString = sCurrentLine.split(" ");
 				switch(i){
 				case 0:
@@ -97,15 +95,12 @@ public class ReadParseHmm {
 
 				i++;
 			}
-			
-			/*
 			System.out.println("N: " + N);
 			System.out.println("M: " + M);
 			System.out.println("T: " + T);
 			System.out.println("a_matrix: " + Arrays.deepToString(a_matrix));
 			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
 			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
-			*/
 			System.out.println("==========================================End of Read File==========================================");
 
 			String obsFilename1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
@@ -144,7 +139,6 @@ public class ReadParseHmm {
 		int numWords =0;
 
 		for(int dataSetIndex=0; dataSetIndex<dataset_length; dataSetIndex++){
-			
 			System.out.println("=============== Start of Forward Algorithm==============================");
 
 			if((sCurrentLine = br.readLine()) != null) {
@@ -181,6 +175,7 @@ public class ReadParseHmm {
 			sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
 					sigma, numWords, obsIndex, a_ij_times_simga);
 			chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
+			
 //			System.out.println("chai: " + Arrays.deepToString(chai));
 //			System.out.println("numWords: " + numWords);
 //			System.out.println("sigma.length: " + sigma.length);
@@ -192,18 +187,7 @@ public class ReadParseHmm {
 			System.out.println("q_star[i]: " + Arrays.toString(q_star) );
 			System.out.println("===============End of Viterabi Algorithm==============================");
 
-			
-			System.out.println("===============Start of Baum-Welch Algorithm==============================");
 
-			
-			
-			
-			System.out.println("===============End of Baum-Welch Algorithm==============================");
-
-			
-			
-			
-			
 		}
 
 
@@ -267,6 +251,7 @@ public class ReadParseHmm {
 		//t=2
 		for(int t=1;t<numWords;t++){
 			for(int j=0;j<N;j++){
+				a_ij_times_simga= new double[N];
 				for(int state=0;state<N;state++){
 //						System.out.println("sigma[t-1][state]*a_matrix[state][j]:  " + sigma[t-1][state]*a_matrix[state][j]);
 					a_ij_times_simga[state] = sigma[t-1][state]*a_matrix[state][j];

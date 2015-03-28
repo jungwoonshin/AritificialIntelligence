@@ -12,7 +12,7 @@
  * 
  */
 
-package withRegularization;
+package p02_withoutRegularization;
 
 import java.util.Iterator;
 import java.util.List;
@@ -177,7 +177,6 @@ public class NeuralNet {
 				// Calculate delta of target node using rate parameter r
 				node.calcBetaOutput(target, rate);
 			}
-			
 		
 			// 2) Compute Beta for "hidden layer" nodes
 			List<Node> hiddenLayer;
@@ -355,12 +354,12 @@ public class NeuralNet {
 			switch (id) {
 				default: 
 				case 0: 
-					if (1.1 - target > 0.5) { // false
-						if (ret > 0.5) { // decide to be true
+					if (target >= 0.5) { // false
+						if (ret < 0.5) { // decide to be true
 							++accu;
 						}
 					} else { // true
-						if (ret < 0.5) { // decide to be false
+						if (ret >=  0.5) { // decide to be false
 							++accu;
 						}
 					}
