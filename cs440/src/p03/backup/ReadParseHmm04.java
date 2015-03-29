@@ -1,4 +1,4 @@
-package p03;
+package p03.backup;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.OptionalDouble;
 
 
-public class ReadParseHmm05 {
+public class ReadParseHmm04 {
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = null;
 		/*
@@ -43,7 +43,7 @@ public class ReadParseHmm05 {
 				/*
 				System.out.println("i: " + i);
 				System.out.println("sCurrentLine: " + sCurrentLine);
-				 */
+				*/
 				parsedSpaceString = sCurrentLine.split(" ");
 				switch(i){
 				case 0:
@@ -88,16 +88,16 @@ public class ReadParseHmm05 {
 					pi_matrix[1] = Double.valueOf(parsedSpaceString[1]);
 					pi_matrix[2] = Double.valueOf(parsedSpaceString[2]);
 					pi_matrix[3] = Double.valueOf(parsedSpaceString[3]);
-					//					pi_matrix[0] = .25;
-					//					pi_matrix[1] = .25;
-					//					pi_matrix[2] =  .25;
-					//					pi_matrix[3] = .25;
+//					pi_matrix[0] = .25;
+//					pi_matrix[1] = .25;
+//					pi_matrix[2] =  .25;
+//					pi_matrix[3] = .25;
 					break;
 				}
 
 				i++;
 			}
-
+			
 			/*
 			System.out.println("N: " + N);
 			System.out.println("M: " + M);
@@ -105,7 +105,7 @@ public class ReadParseHmm05 {
 			System.out.println("a_matrix: " + Arrays.deepToString(a_matrix));
 			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
 			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
-			 */
+			*/
 			System.out.println("==========================================End of Read File==========================================");
 
 			String obsFilename1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
@@ -139,18 +139,18 @@ public class ReadParseHmm05 {
 		int dataset_length = Integer.parseInt(sCurrentLine);
 
 		double[][] alpha;
-		double[][] beta;
 		double[][] sigma;
 		double[][] chai;
 		int numWords =0;
 
 		for(int dataSetIndex=0; dataSetIndex<dataset_length; dataSetIndex++){
-			if((sCurrentLine = br.readLine()) != null) numWords = Integer.parseInt(sCurrentLine);
-			String words[] =  br.readLine().split(" ");
-
+			
 			System.out.println("=============== Start of Forward Algorithm==============================");
 
-
+			if((sCurrentLine = br.readLine()) != null) {
+				numWords = Integer.parseInt(sCurrentLine);
+			}
+			String words[] =  br.readLine().split(" ");
 			System.out.println("dataset_length: " + dataset_length);
 			System.out.println("words: " +Arrays.toString(words));
 			System.out.println("numWords: " + numWords);
@@ -163,80 +163,58 @@ public class ReadParseHmm05 {
 
 			alpha = getAlpha(N, a_matrix, b_matrix, pi_matrix, numWords,
 					obsIndex);
-			System.out.println("alpha: "+ Arrays.deepToString(alpha));
-			beta = getBeta(N, a_matrix, b_matrix, numWords, obsIndex);
-			System.out.println("beta: "+ Arrays.deepToString(beta));
-
-			
-
-
 			double Answer = 0.0;
 			for(int state=0; state<N; state++){ Answer += alpha[numWords-1][state]; }
-			System.out.println("sum(alpha(T)): The probablity of given obervation data set [O1...OT]="+Arrays.toString(words)+"=" + Answer);
-
+			System.out.println("Answer: " + Answer);
+			
 			System.out.println("=============== End of Forward Algorithm==============================");
 
+			
+			System.out.println("===============Start of Viterabi Algorithm==============================");
 
-			//			System.out.println("===============Start of Viterabi Algorithm==============================");
-			//
-			//			/* Viterabi Algorithm */
-			//			sigma = new double[numWords][N];
-			//			chai = new double[numWords][N];
-			//			double[] a_ij_times_simga=new double[N];
-			//
-			//			// Step 1 & 2: Recursion
-			//			sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
-			//					sigma, numWords, obsIndex, a_ij_times_simga);
-			//			chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
-			////			System.out.println("chai: " + Arrays.deepToString(chai));
-			////			System.out.println("numWords: " + numWords);
-			////			System.out.println("sigma.length: " + sigma.length);
-			////			System.out.println("sigma[0].length: " + sigma[0].length);
-			//
-			//			// Step 3: termination step
-			//			int q_star[]=new int[numWords];
-			//			q_star = getQStar(sigma, chai, numWords, q_star);
-			//			System.out.println("q_star[i]: The best sequence of states that will generate the given observation: " + Arrays.toString(q_star) );
-			//			System.out.println("===============End of Viterabi Algorithm==============================");
-			//
-			//			
-			//			System.out.println("===============Start of Baum-Welch Algorithm==============================");
-			//
-			//			
-			//			
-			//			
-			//			System.out.println("===============End of Viterabi Algorithm==============================");
+			/* Viterabi Algorithm */
+			sigma = new double[numWords][N];
+			chai = new double[numWords][N];
+			double[] a_ij_times_simga=new double[N];
 
+			// Step 1 & 2: Recursion
+			sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
+					sigma, numWords, obsIndex, a_ij_times_simga);
+			chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
+//			System.out.println("chai: " + Arrays.deepToString(chai));
+//			System.out.println("numWords: " + numWords);
+//			System.out.println("sigma.length: " + sigma.length);
+//			System.out.println("sigma[0].length: " + sigma[0].length);
 
+			// Step 3: termination step
+			int q_star[]=new int[numWords];
+			q_star = getQStar(sigma, chai, numWords, q_star);
+			System.out.println("q_star[i]: " + Arrays.toString(q_star) );
+			System.out.println("===============End of Viterabi Algorithm==============================");
 
+			
+			System.out.println("===============Start of Baum-Welch Algorithm==============================");
 
+			
+			
+			
+			System.out.println("===============End of Baum-Welch Algorithm==============================");
 
+			
+			
+			
+			
 		}
+
+
+
+
+
+
 
 
 
 		br.close();
-	}
-
-	private static double[][] getBeta(int N, double[][] a_matrix,
-			double[][] b_matrix, int numWords, int[] obsIndex) {
-		double[][] beta;
-		beta = new double[numWords][N];
-		//initialization
-		for(int i=0; i<N; i++){
-			beta[numWords-1][i] = 1.0;
-		}
-
-		//induction
-		for(int t=numWords-2;t>=0;t--){
-			for(int i=0; i<N;i++){
-				for(int j=0;j<N;j++){
-					beta[t][i] += a_matrix[i][j]*b_matrix[j][obsIndex[t+1]]*beta[t+1][j];
-				}
-			}
-		}
-
-		return beta;
 	}
 
 	private static int[] getQStar(double[][] sigma, double[][] chai,
@@ -247,8 +225,8 @@ public class ReadParseHmm05 {
 			q_star[numWords-1]++;
 		}
 		System.out.println("p_star: " + p_star);
-
-		//Step 4, Path.
+		
+		//Path.
 		for(int i=numWords-2;i<=0;i--){
 			q_star[i] =  (int) chai[i+1][(int)q_star[i+1]];
 		}
@@ -284,11 +262,13 @@ public class ReadParseHmm05 {
 		}
 		System.out.println("sigma After initialization: " + Arrays.deepToString(sigma));
 
-		//recursion step, t=2
+		//recursion step
+
+		//t=2
 		for(int t=1;t<numWords;t++){
 			for(int j=0;j<N;j++){
 				for(int state=0;state<N;state++){
-					//						System.out.println("sigma[t-1][state]*a_matrix[state][j]:  " + sigma[t-1][state]*a_matrix[state][j]);
+//						System.out.println("sigma[t-1][state]*a_matrix[state][j]:  " + sigma[t-1][state]*a_matrix[state][j]);
 					a_ij_times_simga[state] = sigma[t-1][state]*a_matrix[state][j];
 				}
 				OptionalDouble highest = Arrays.stream(a_ij_times_simga).max();
@@ -318,6 +298,8 @@ public class ReadParseHmm05 {
 				}
 			}
 		}
+		System.out.println("alpha: "+ Arrays.deepToString(alpha));
+		
 		return alpha;
 	}
 	public static int getIndex(String word, String vocab[]){
@@ -330,6 +312,15 @@ public class ReadParseHmm05 {
 
 	private static double[][] extract_amatrix_Values(int i, double[][] a_matrix,
 			String[] parseSpaceAvalues) {
+		//		System.out.println("Double.valueOf(parseSpaceAvalues[0]):  " +Double.valueOf(parseSpaceAvalues[0]));
+		//		System.out.println("Double.valueOf(parseSpaceAvalues[1]):  " +Double.valueOf(parseSpaceAvalues[1]));
+		//		System.out.println("Double.valueOf(parseSpaceAvalues[2]):  " +Double.valueOf(parseSpaceAvalues[2]));
+		//		System.out.println("Double.valueOf(parseSpaceAvalues[3]):  " +Double.valueOf(parseSpaceAvalues[3]));
+		//
+		//		a_matrix[i][0] = Double.valueOf(parseSpaceAvalues[0]);
+		//		a_matrix[i][1] = Double.valueOf(parseSpaceAvalues[1]);
+		//		a_matrix[i][2] = Double.valueOf(parseSpaceAvalues[2]);
+		//		a_matrix[i][3] = Double.valueOf(parseSpaceAvalues[3]);
 		for(int k=0; k<a_matrix[0].length;k++){
 			a_matrix[i][k] = Double.valueOf(parseSpaceAvalues[k]);
 		}

@@ -148,17 +148,6 @@ public class HMM_System {
 				obsIndex[j] =getIndex(words[j], list_of_vocabs);
 				//				System.out.println("obsIndex["+j+"]: " + obsIndex[j] );
 			}
-
-			//			String line1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm";
-			//			String line2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
-			//			String line3 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
-			////			recognize(line1,line2 );
-			////			recognize(line1,line3 );
-			//			optimize(line1, line3, "/Users/jungwoonshin/git/cs440/cs440/src/p03/output.txt");
-
-
-
-
 			alpha = getAlpha(N, a_matrix, b_matrix, pi_matrix, numWords,
 					obsIndex);
 			beta = getBeta(N, a_matrix, b_matrix, numWords, obsIndex);
@@ -196,12 +185,10 @@ public class HMM_System {
 			System.out.println("\n\n===============Start of Baum-Welch Algorithm==============================");
 
 			
-			for(int i=0; i<1000; i++){
+			for(int i=0; i<1; i++){
 				runBaumWelch(N, M, a_matrix, b_matrix, pi_matrix, alpha, beta,
 						numWords, obsIndex);
 			}
-
-
 			System.out.println("===============End of Viterabi Algorithm==============================");
 		}
 		br.close();
@@ -270,6 +257,11 @@ public class HMM_System {
 		}
 		b_matrix = trained_b_matrix;
 		System.out.println("trained_b_matrix: " + Arrays.deepToString(trained_b_matrix));
+		alpha = getAlpha(N, trained_a_matrix, trained_b_matrix, pi_matrix, numWords, obsIndex);
+		beta = getBeta(N, trained_a_matrix, trained_b_matrix, numWords, obsIndex);
+		System.out.println("trained_alpha_matrix: " + Arrays.deepToString(alpha));
+		System.out.println("trained_beta_matrix: " + Arrays.deepToString(beta));
+
 	}
 
 	private static double[][] getGamma(int N,  int numWords, double[][] alpha, double[][] beta) {
@@ -359,7 +351,6 @@ public class HMM_System {
 		}
 
 		//		System.out.println("a_matrix : "+ Arrays.deepToString(a_matrix));
-
 		//induction
 		for(int t=numWords-2;t>=0;t--){
 			for(int i=0; i<N;i++){
