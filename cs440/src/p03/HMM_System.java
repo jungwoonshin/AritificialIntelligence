@@ -6,10 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.OptionalDouble;
+import java.util.Random;
 
 
 public class HMM_System {
-	private static final double DENOMINATOR_CONSTANT = 10e-10;
+	private static final double DENOMINATOR_CONSTANT = 10e-70;
 
 	public static void main(String[] args) throws Exception {
 
@@ -83,13 +84,30 @@ public class HMM_System {
 					pi_matrix[3] = Double.valueOf(parsedSpaceString[3]);
 					//					pi_matrix[0] = .25;
 					//					pi_matrix[1] = .25;
-					//					pi_matrix[2] =  .25;
+					//					pi_matrix[2] = .25;
 					//					pi_matrix[3] = .25;
 					break;
 				}
 
 				i++;
 			}
+			for(int a=0; a<4;a++){
+				for(int j=0; j<4;j++){
+					if(j==3){
+						a_matrix[a][j] =1.-(.23*3.0);
+					} else{
+					a_matrix[a][j] =0.23;
+					}
+				}
+			}
+			
+			for(int a=0; a<4;a++){
+				for(int j=0; j<8;j++){
+					b_matrix[a][j] =1./8.;
+				}
+				pi_matrix[a] = .25;
+			}
+			
 			System.out.println("==========================================Beginning of Read File==========================================");
 
 			System.out.println("N: " + N);
@@ -99,7 +117,9 @@ public class HMM_System {
 			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
 			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
 			System.out.println("==========================================End of Read File==========================================");
-
+			
+			
+			
 			String obsFilename1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
 			runObsFile(obsFilename1, N,M, list_of_vocabs, a_matrix, b_matrix, pi_matrix);
 			String obsFilename2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
@@ -171,7 +191,7 @@ public class HMM_System {
 			sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
 					sigma, numWords, obsIndex, a_ij_times_simga);
 			chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
-			//			System.out.println("chai: " + Arrays.deepToString(chai));
+						System.out.println("chai: " + Arrays.deepToString(chai));
 			//			System.out.println("numWords: " + numWords);
 			//			System.out.println("sigma.length: " + sigma.length);
 			//			System.out.println("sigma[0].length: " + sigma[0].length);
@@ -184,11 +204,13 @@ public class HMM_System {
 
 			System.out.println("\n\n===============Start of Baum-Welch Algorithm==============================");
 
-			
+
 			for(int i=0; i<1; i++){
 				runBaumWelch(N, M, a_matrix, b_matrix, pi_matrix, alpha, beta,
 						numWords, obsIndex);
 			}
+
+
 			System.out.println("===============End of Viterabi Algorithm==============================");
 		}
 		br.close();
@@ -232,8 +254,8 @@ public class HMM_System {
 			}
 		}
 		a_matrix = trained_a_matrix;
-		System.out.println("trained_a_matrix: " + Arrays.deepToString(trained_a_matrix));
-		
+//		System.out.println("trained_a_matrix: " + Arrays.deepToString(trained_a_matrix));
+
 		double[][] trained_b_matrix = new double[N][M];
 
 		for(int i=0; i<N;i++){
@@ -256,11 +278,14 @@ public class HMM_System {
 			}
 		}
 		b_matrix = trained_b_matrix;
-		System.out.println("trained_b_matrix: " + Arrays.deepToString(trained_b_matrix));
+//		System.out.println("trained_b_matrix: " + Arrays.deepToString(trained_b_matrix));
 		alpha = getAlpha(N, trained_a_matrix, trained_b_matrix, pi_matrix, numWords, obsIndex);
 		beta = getBeta(N, trained_a_matrix, trained_b_matrix, numWords, obsIndex);
-		System.out.println("trained_alpha_matrix: " + Arrays.deepToString(alpha));
-		System.out.println("trained_beta_matrix: " + Arrays.deepToString(beta));
+//		System.out.println("trained_alpha_matrix: " + Arrays.deepToString(alpha));
+//		System.out.println("trained_beta_matrix: " + Arrays.deepToString(beta));
+		
+		System.out.println("trained_a_matrix: " + Arrays.deepToString(a_matrix));
+		System.out.println("trained_b_matrix: " + Arrays.deepToString(b_matrix));
 
 	}
 
@@ -325,7 +350,7 @@ public class HMM_System {
 			}
 		}
 		 */
-
+		
 		//wiki version
 		double denominator = 0.;
 		for(int k=0;k<N;k++){
@@ -369,14 +394,14 @@ public class HMM_System {
 	private static int[] getQStar(double[][] sigma, double[][] chai,
 			int numWords, int[] q_star) {
 		double p_star = Arrays.stream(sigma[numWords-1]).max().getAsDouble();
+		System.out.println("p_star: " + p_star);
 		for(double e: sigma[numWords-1]){
 			if(e==p_star) break;
 			q_star[numWords-1]++;
 		}
-		System.out.println("p_star: " + p_star);
 
 		//Step 4, Path.
-		for(int i=numWords-2;i<=0;i--){
+		for(int i=numWords-2;i>=0;i--){
 			q_star[i] =  (int) chai[i+1][(int)q_star[i+1]];
 		}
 		return q_star;
@@ -385,18 +410,34 @@ public class HMM_System {
 	private static double[][] getChai(int N, double[][] a_matrix, double[][] sigma,
 			double[][] chai, int numWords, double[] a_ij_times_simga) {
 		//t=2 
+		Random rand = new Random();
 		for(int t=1;t<numWords;t++){
 			for(int j=0;j<N;j++){
 				for(int i=1;i<N;i++){
 					a_ij_times_simga[i] = sigma[t-1][i]*a_matrix[i][j];
 				}
 				double highest_value = Arrays.stream(a_ij_times_simga).max().getAsDouble();
+				/*
+				if(highest_value!=0){
+					int highest_index=0;
+					for(double s:a_ij_times_simga){
+						if(s==highest_value) break;
+						highest_index++;
+					}
+					chai[t][j] = highest_index;
+				} else {
+					System.out.println("here");
+					System.out.println("rand.nextInt(8): "+ rand.nextInt(8));
+					chai[t][j] = (double)rand.nextInt(8);
+				}
+				*/
 				int highest_index=0;
 				for(double s:a_ij_times_simga){
 					if(s==highest_value) break;
 					highest_index++;
 				}
 				chai[t][j] = highest_index;
+				
 			}
 		}
 		return chai;
