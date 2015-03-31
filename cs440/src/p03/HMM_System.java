@@ -106,10 +106,19 @@ public class HMM_System {
 			}
 			
 			for(int a=0; a<4;a++){
-				for(int j=0; j<8;j++){
-					b_matrix[a][j] =1./8.;
-				}
-				pi_matrix[a] = .25;
+//				for(int j=0; j<8;j++){
+//					b_matrix[a][j] =1./8.;
+//				}
+				b_matrix[a][0] =.05;
+				b_matrix[a][1] =.15;
+				b_matrix[a][2] =.10;
+				b_matrix[a][3] =.20;
+				b_matrix[a][4] =.10;
+				b_matrix[a][5] =.3;
+				b_matrix[a][6] =.05;
+				b_matrix[a][7] =.05;
+
+//				pi_matrix[a] = .25;
 			}
 			
 			System.out.println("==========================================Beginning of Read File==========================================");
@@ -189,33 +198,13 @@ public class HMM_System {
 			System.out.println("\n\n===============Start of Viterabi Algorithm==============================");
 
 			// Viterabi Algorithm 
-			sigma = new double[numWords][N];
-			chai = new double[numWords][N];
-			double[] a_ij_times_simga=new double[N];
-
-			// Step 1 & 2: Recursion
-			sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
-					sigma, numWords, obsIndex, a_ij_times_simga);
-			chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
-						System.out.println("chai: " + Arrays.deepToString(chai));
-			//			System.out.println("numWords: " + numWords);
-			//			System.out.println("sigma.length: " + sigma.length);
-			//			System.out.println("sigma[0].length: " + sigma[0].length);
-
-			// Step 3: termination step
-			int q_star[]=new int[numWords];
-			q_star = getQStar(sigma, chai, numWords, q_star);
-			System.out.println("q_star[i]: The best sequence of states that will generate the given observation: " + Arrays.toString(q_star) );
-			System.out.print("Generated the Best Plausible Sentence: ");
-			for(int i=0; i<q_star.length;i++){
-				System.out.print(list_of_vocabs[q_star[i]]+ " ");
-			}
+			runViterabi(N, list_of_vocabs, a_matrix, b_matrix, pi_matrix,
+					numWords, obsIndex);
+			
 			System.out.println("\n===============End of Viterabi Algorithm==============================");
 
 			System.out.println("\n\n===============Start of Baum-Welch Algorithm==============================");
-
-
-			for(int i=0; i<10; i++){
+			for(int i=0; i<1; i++){
 				runBaumWelch(N, M, a_matrix, b_matrix, pi_matrix, alpha, beta,
 						numWords, obsIndex);
 			}
@@ -224,9 +213,40 @@ public class HMM_System {
 			Answer=0.;
 			for(int state=0; state<N; state++){ Answer += alpha[numWords-1][state]; }
 			System.out.println("sum(alpha(T)): The probablity of given obervation data set [O1...OT]="+Arrays.toString(words)+"=" + Answer);
+			
+			
 			System.out.println("===============End of Viterabi Algorithm==============================");
 		}
 		br.close();
+	}
+
+	private static void runViterabi(int N, String[] list_of_vocabs,
+			double[][] a_matrix, double[][] b_matrix, double[] pi_matrix,
+			int numWords, int[] obsIndex) {
+		double[][] sigma;
+		double[][] chai;
+		sigma = new double[numWords][N];
+		chai = new double[numWords][N];
+		double[] a_ij_times_simga=new double[N];
+
+		// Step 1 & 2: Recursion
+		sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
+				sigma, numWords, obsIndex, a_ij_times_simga);
+		chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
+					System.out.println("chai: " + Arrays.deepToString(chai));
+		//			System.out.println("numWords: " + numWords);
+		//			System.out.println("sigma.length: " + sigma.length);
+		//			System.out.println("sigma[0].length: " + sigma[0].length);
+
+		// Step 3: termination step
+		int q_star[]=new int[numWords];
+		q_star = getQStar(sigma, chai, numWords, q_star);
+		System.out.println("q_star[i]: The best sequence of states that will generate the given observation: " + Arrays.toString(q_star) );
+		System.out.print("Generated the Best Plausible Sentence: ");
+		for(int i=0; i<q_star.length;i++){
+			System.out.print(list_of_vocabs[q_star[i]]+ " ");
+		}
+		System.out.println("\n");
 	}
 
 	private static void runBaumWelch(int N, int M, double[][] a_matrix,
