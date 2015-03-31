@@ -1,4 +1,4 @@
-package p03;
+package p03.commandline;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,148 +7,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.OptionalDouble;
 
-
-public class HMM_System {
+public class HMM_Algorithms {
 	private static final double DENOMINATOR_CONSTANT = 10e-70;
-
-	public static void main(String[] args) throws Exception {
-
-		BufferedReader br = null;
-
-		
-		/*
-		 * Variables to be used for the system.
-		 */
-		int i=0;
-		int N=0; //number of states
-		int M=0; //number of observation symbols.
-		int T=0; //number of length of sequence
-		String[] parsedSpaceString=null;
-		String[] list_of_vocabs=null;
-		double[][] a_matrix =null;
-		double[][] b_matrix =null;
-		double[] pi_matrix =null;
-		@SuppressWarnings("unused")
-		String[] parseSpaceAvalues=null;
-		@SuppressWarnings("unused")
-		double[][] alpha;
-
-		try {
-
-			String sCurrentLine;
-			br = new BufferedReader(new FileReader("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm"));
-
-			while ((sCurrentLine = br.readLine()) != null) {
-				//				System.out.println("i: " + i);
-				//				System.out.println("sCurrentLine: " + sCurrentLine);
-				parsedSpaceString = sCurrentLine.split(" ");
-				switch(i){
-				case 0:
-					N =Integer.parseInt(parsedSpaceString[0]);
-					M =Integer.parseInt(parsedSpaceString[1]);
-					T = Integer.parseInt(parsedSpaceString[2]);
-					a_matrix = new double[N][N];
-					b_matrix = new double [N][M];
-					pi_matrix = new double[N];
-					break;
-				case 1:
-					break;
-				case 2:
-					list_of_vocabs = sCurrentLine.split(" ");
-					break;
-				case 4:
-					a_matrix = extract_amatrix_Values(0, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 5:
-					a_matrix = extract_amatrix_Values(1, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 6:
-					a_matrix = extract_amatrix_Values(2, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 7:
-					a_matrix = extract_amatrix_Values(3, a_matrix,sCurrentLine.split(" "));
-					break;
-				case 9:
-					b_matrix = extract_bmatrix_Values(0, b_matrix,parsedSpaceString);
-					break;
-				case 10:
-					b_matrix = extract_bmatrix_Values(1, b_matrix,parsedSpaceString);
-					break;
-				case 11:
-					b_matrix = extract_bmatrix_Values(2, b_matrix,parsedSpaceString);
-					break;
-				case 12:
-					b_matrix = extract_bmatrix_Values(3, b_matrix,parsedSpaceString);
-					break;
-				case 14:
-					pi_matrix[0] = Double.valueOf(parsedSpaceString[0]);
-					pi_matrix[1] = Double.valueOf(parsedSpaceString[1]);
-					pi_matrix[2] = Double.valueOf(parsedSpaceString[2]);
-					pi_matrix[3] = Double.valueOf(parsedSpaceString[3]);
-					//					pi_matrix[0] = .25;
-					//					pi_matrix[1] = .25;
-					//					pi_matrix[2] = .25;
-					//					pi_matrix[3] = .25;
-					break;
-				}
-
-				i++;
-			}
-			
-			/*
-			 * Initializing values so that probabilities are non-zero.
-			 */
-			for(int a=0; a<4;a++){
-				a_matrix[a][0] =0.23;
-				a_matrix[a][1] =0.23;
-				a_matrix[a][2] =0.21;
-				a_matrix[a][3] =1.-.23-.23-.21;
-			}
-			
-			for(int a=0; a<4;a++){
-//				for(int j=0; j<8;j++){
-//					b_matrix[a][j] =1./8.;
-//				}
-				b_matrix[a][0] =.05;
-				b_matrix[a][1] =.15;
-				b_matrix[a][2] =.10;
-				b_matrix[a][3] =.20;
-				b_matrix[a][4] =.10;
-				b_matrix[a][5] =.3;
-				b_matrix[a][6] =.05;
-				b_matrix[a][7] =.05;
-
-//				pi_matrix[a] = .25;
-			}
-			
-			System.out.println("==========================================Beginning of Read File==========================================");
-
-			System.out.println("N: " + N);
-			System.out.println("M: " + M);
-			System.out.println("T: " + T);
-			System.out.println("a_matrix: " + Arrays.deepToString(a_matrix));
-			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
-			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
-			System.out.println("==========================================End of Read File==========================================");
-			
-			String obsFilename1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
-			runObsFile(obsFilename1, N,M, list_of_vocabs, a_matrix, b_matrix, pi_matrix);
-			String obsFilename2 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example2.obs";
-			runObsFile(obsFilename2, N, M,list_of_vocabs, a_matrix, b_matrix, pi_matrix);
-
-			//optimize("/Users/jungwoonshin/git/cs440/cs440/src/p03/sentence.hmm", "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs","/Users/jungwoonshin/git/cs440/cs440/src/p03/output.txt");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (br != null)br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-			br.close();
-		}
-	}
 
 	/*
 	 * Runs a single ObsFile. Assumes that a single file has at least one data set.
@@ -156,7 +16,7 @@ public class HMM_System {
 	 * As a side effect, it will compute the following values:
 	 * 		alpha, beta, gamma, chai, xi, sigma.
 	 */
-	private static void runObsFile(String obsFilename, int N, int M,String[] list_of_vocabs,
+	public static void runObsFile(String obsFilename, int N, int M,String[] list_of_vocabs,
 			double[][] a_matrix, double[][] b_matrix, double[] pi_matrix)
 					throws FileNotFoundException, IOException {
 		BufferedReader br=new BufferedReader(new FileReader(obsFilename));
@@ -172,11 +32,11 @@ public class HMM_System {
 		for(int dataSetIndex=0; dataSetIndex<dataset_length; dataSetIndex++){
 			if((sCurrentLine = br.readLine()) != null) numWords = Integer.parseInt(sCurrentLine);
 			String words[] =  br.readLine().split(" ");
-			System.out.println("\n\n\n\n\n----------------------- New Data Set -----------------------------------");
-			System.out.println("=============== Start of Forward Algorithm==============================");
-			System.out.println("dataset_length: " + dataset_length);
-			System.out.println("words: " +Arrays.toString(words));
-			System.out.println("numWords: " + numWords);
+//			System.out.println("\n\n\n\n\n----------------------- New Data Set -----------------------------------");
+//			System.out.println("=============== Start of Forward Algorithm==============================");
+//			System.out.println("dataset_length: " + dataset_length);
+//			System.out.println("words: " +Arrays.toString(words));
+//			System.out.println("numWords: " + numWords);
 
 			int obsIndex[] = new int[numWords];
 			for(int j=0; j<numWords; j++){ 
@@ -187,40 +47,36 @@ public class HMM_System {
 					obsIndex);
 			beta = getBeta(N, a_matrix, b_matrix, numWords, obsIndex);
 
-			System.out.println("alpha: "+ Arrays.deepToString(alpha));
-			System.out.println("beta: "+ Arrays.deepToString(beta));
 
 			double Answer = 0.0;
 			for(int state=0; state<N; state++){ Answer += alpha[numWords-1][state]; }
-			System.out.println("sum(alpha(T)): The probablity of given obervation data set [O1...OT]="+Arrays.toString(words)+"=" + Answer);
-			System.out.println("=============== End of Forward Algorithm==============================");
-
-			System.out.println("\n\n===============Start of Viterabi Algorithm==============================");
+//			System.out.println("alpha: "+ Arrays.deepToString(alpha));
+//			System.out.println("beta: "+ Arrays.deepToString(beta));
+			System.out.println("The probablity of observing: "+Arrays.toString(words)+"=" + Answer);
+//			System.out.println("=============== End of Forward Algorithm==============================");
+//			System.out.println("\n\n===============Start of Viterabi Algorithm==============================");
 
 			// Viterabi Algorithm 
 			runViterabi(N, list_of_vocabs, a_matrix, b_matrix, pi_matrix,
 					numWords, obsIndex);
 			
-			System.out.println("\n===============End of Viterabi Algorithm==============================");
-
-			System.out.println("\n\n===============Start of Baum-Welch Algorithm==============================");
+//			System.out.println("\n===============End of Viterabi Algorithm==============================");
+//			System.out.println("\n\n===============Start of Baum-Welch Algorithm==============================");
 			for(int i=0; i<1; i++){
 				runBaumWelch(N, M, a_matrix, b_matrix, pi_matrix, alpha, beta,
 						numWords, obsIndex);
 			}
-			System.out.println("alpha: "+ Arrays.deepToString(alpha));
-			System.out.println("beta: "+ Arrays.deepToString(beta));
+//			System.out.println("alpha: "+ Arrays.deepToString(alpha));
+//			System.out.println("beta: "+ Arrays.deepToString(beta));
 			Answer=0.;
 			for(int state=0; state<N; state++){ Answer += alpha[numWords-1][state]; }
-			System.out.println("sum(alpha(T)): The probablity of given obervation data set [O1...OT]="+Arrays.toString(words)+"=" + Answer);
-			
-			
-			System.out.println("===============End of Viterabi Algorithm==============================");
+//			System.out.println("sum(alpha(T)): The probablity of given obervation data set [O1...OT]="+Arrays.toString(words)+"=" + Answer);
+//			System.out.println("===============End of Baum-Welch Algorithm==============================");
 		}
 		br.close();
 	}
 
-	private static void runViterabi(int N, String[] list_of_vocabs,
+	public static void runViterabi(int N, String[] list_of_vocabs,
 			double[][] a_matrix, double[][] b_matrix, double[] pi_matrix,
 			int numWords, int[] obsIndex) {
 		double[][] sigma;
@@ -233,7 +89,7 @@ public class HMM_System {
 		sigma = getSigma(N, a_matrix, b_matrix, pi_matrix,
 				sigma, numWords, obsIndex, a_ij_times_simga);
 		chai = getChai(N, a_matrix, sigma, chai, numWords, a_ij_times_simga);
-					System.out.println("chai: " + Arrays.deepToString(chai));
+//					System.out.println("chai: " + Arrays.deepToString(chai));
 		//			System.out.println("numWords: " + numWords);
 		//			System.out.println("sigma.length: " + sigma.length);
 		//			System.out.println("sigma[0].length: " + sigma[0].length);
@@ -241,28 +97,28 @@ public class HMM_System {
 		// Step 3: termination step
 		int q_star[]=new int[numWords];
 		q_star = getQStar(sigma, chai, numWords, q_star);
-		System.out.println("q_star[i]: The best sequence of states that will generate the given observation: " + Arrays.toString(q_star) );
-		System.out.print("Generated the Best Plausible Sentence: ");
-		for(int i=0; i<q_star.length;i++){
-			System.out.print(list_of_vocabs[q_star[i]]+ " ");
-		}
-		System.out.println("\n");
+//		System.out.println("q_star[i]: The best sequence of states that will generate the given observation: " + Arrays.toString(q_star) );
+//		System.out.print("Generated the Best Plausible Sentence: ");
+//		for(int i=0; i<q_star.length;i++){
+//			System.out.print(list_of_vocabs[q_star[i]]+ " ");
+//		}
+//		System.out.println("\n");
 	}
 
-	private static void runBaumWelch(int N, int M, double[][] a_matrix,
+	public static void runBaumWelch(int N, int M, double[][] a_matrix,
 			double[][] b_matrix, double[] pi_matrix, double[][] alpha,
 			double[][] beta, int numWords, int[] obsIndex) {
 		double[][][] xi;
 		double[][] gamma;
 		xi = getXI(N, a_matrix, b_matrix, alpha, beta, numWords, obsIndex);
-		System.out.println("xi: "+ Arrays.deepToString(xi));
 		gamma = getGamma(N, numWords, alpha, beta);
-		System.out.println("gamma: "+ Arrays.deepToString(gamma));
+//		System.out.println("xi: "+ Arrays.deepToString(xi));
+//		System.out.println("gamma: "+ Arrays.deepToString(gamma));
 
 		for(int i=0; i<N;i++){
 			pi_matrix[i] = gamma[0][i];
 		}
-		System.out.println("pi_matrix: " + Arrays.toString(pi_matrix));
+//		System.out.println("pi_matrix: " + Arrays.toString(pi_matrix));
 
 		double[][] trained_a_matrix = new double[N][N];
 		//			trained_a_matrix = a_matrix;
@@ -315,12 +171,12 @@ public class HMM_System {
 		beta = getBeta(N, trained_a_matrix, trained_b_matrix, numWords, obsIndex);
 		
 		
-		System.out.println("trained_a_matrix: " + Arrays.deepToString(a_matrix));
-		System.out.println("trained_b_matrix: " + Arrays.deepToString(b_matrix));
+//		System.out.println("trained_a_matrix: " + Arrays.deepToString(a_matrix));
+//		System.out.println("trained_b_matrix: " + Arrays.deepToString(b_matrix));
 
 	}
 
-	private static double[][] getGamma(int N,  int numWords, double[][] alpha, double[][] beta) {
+	public static double[][] getGamma(int N,  int numWords, double[][] alpha, double[][] beta) {
 		double[][] gamma;
 		gamma = new double[numWords][N];
 		/*	
@@ -350,7 +206,7 @@ public class HMM_System {
 		return gamma;
 	}
 
-	private static double[][][] getXI(int N, double[][] a_matrix, double[][] b_matrix,
+	public static double[][][] getXI(int N, double[][] a_matrix, double[][] b_matrix,
 			double[][] alpha, double[][] beta, int numWords, int[] obsIndex) {
 		double[][][] xi = new double[numWords][N][N];
 		for(int t=0; t<numWords-1;t++){
@@ -363,7 +219,7 @@ public class HMM_System {
 		return xi;
 	}
 
-	private static double getXi_IJ_value(int t, int state1, int state2, int N, double[][] a_matrix,
+	public static double getXi_IJ_value(int t, int state1, int state2, int N, double[][] a_matrix,
 			double[][] b_matrix, double[][] alpha, double[][] beta,
 			double[][][] xi, int numWords, int[] obsIndex) {
 		xi[t][state1][state2] = alpha[t][state1] * a_matrix[state1][state2]*b_matrix[state2][obsIndex[t+1]] * beta[t+1][state2];
@@ -390,7 +246,7 @@ public class HMM_System {
 		return xi[t][state1][state2];
 	}
 
-	private static double[][] getBeta(int N, double[][] a_matrix,
+	public static double[][] getBeta(int N, double[][] a_matrix,
 			double[][] b_matrix, int numWords, int[] obsIndex) {
 		double[][] beta;
 		beta = new double[numWords][N];
@@ -416,10 +272,10 @@ public class HMM_System {
 		return beta;
 	}
 
-	private static int[] getQStar(double[][] sigma, double[][] chai,
+	public static int[] getQStar(double[][] sigma, double[][] chai,
 			int numWords, int[] q_star) {
 		double p_star = Arrays.stream(sigma[numWords-1]).max().getAsDouble();
-		System.out.println("p_star: " + p_star);
+//		System.out.println("p_star: " + p_star);
 		for(double e: sigma[numWords-1]){
 			if(e==p_star) break;
 			q_star[numWords-1]++;
@@ -432,7 +288,7 @@ public class HMM_System {
 		return q_star;
 	}
 
-	private static double[][] getChai(int N, double[][] a_matrix, double[][] sigma,
+	public static double[][] getChai(int N, double[][] a_matrix, double[][] sigma,
 			double[][] chai, int numWords, double[] a_ij_times_simga) {
 		//t=2 
 		for(int t=1;t<numWords;t++){
@@ -467,14 +323,14 @@ public class HMM_System {
 		return chai;
 	}
 
-	private static double[][] getSigma(int N, double[][] a_matrix,
+	public static double[][] getSigma(int N, double[][] a_matrix,
 			double[][] b_matrix, double[] pi_matrix, double[][] sigma,
 			int numWords, int[] obsIndex, double[] a_ij_times_simga) {
 		//initialization step, t=1
 		for(int state=0; state<N;state++){
 			sigma[0][state] = pi_matrix[state] * b_matrix[state][obsIndex[0]];
 		}
-		System.out.println("sigma After initialization: " + Arrays.deepToString(sigma));
+//		System.out.println("sigma After initialization: " + Arrays.deepToString(sigma));
 
 		//recursion step, t=2
 		for(int t=1;t<numWords;t++){
@@ -487,7 +343,7 @@ public class HMM_System {
 				sigma[t][j] = highest.getAsDouble() * b_matrix[j][obsIndex[t]];
 			}
 		}
-		System.out.println("sigma After recursion: " + Arrays.deepToString(sigma));
+//		System.out.println("sigma After recursion: " + Arrays.deepToString(sigma));
 
 		return sigma;
 	}
@@ -498,7 +354,7 @@ public class HMM_System {
 	 * where T is the number of observed time sequence and
 	 * 		 N is the number of possible states.
 	 */
-	private static double[][] getAlpha(int N, double[][] a_matrix,
+	public static double[][] getAlpha(int N, double[][] a_matrix,
 			double[][] b_matrix, double[] pi_matrix, int numWords,
 			int[] obsIndex) {
 		double[][] alpha= new double[numWords][N];
@@ -541,7 +397,7 @@ public class HMM_System {
 	 * Reads matrix A and returns N*N array.
 	 * N is the number of states
 	 */
-	private static double[][] extract_amatrix_Values(int i, double[][] a_matrix,
+	public static double[][] extract_amatrix_Values(int i, double[][] a_matrix,
 			String[] parseSpaceAvalues) {
 		for(int k=0; k<a_matrix[0].length;k++){
 			a_matrix[i][k] = Double.valueOf(parseSpaceAvalues[k]);
@@ -554,7 +410,7 @@ public class HMM_System {
 	 * N is number of states.
 	 * M is the number of possible outputs.
 	 */
-	private static double[][] extract_bmatrix_Values(int i, double[][] b_matrix,
+	public static double[][] extract_bmatrix_Values(int i, double[][] b_matrix,
 			String[] parseSpaceAvalues) {
 		for(int k=0;k<b_matrix[0].length;k++){
 			//			System.out.println("Double.valueOf(parseSpaceAvalues[k]):  " +Double.valueOf(parseSpaceAvalues[k]));
@@ -562,5 +418,4 @@ public class HMM_System {
 		}
 		return b_matrix;
 	}
-
 }
