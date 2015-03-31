@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.OptionalDouble;
-import java.util.Random;
 
 
 public class HMM_System05 {
@@ -16,6 +15,10 @@ public class HMM_System05 {
 
 		BufferedReader br = null;
 
+		
+		/*
+		 * Variables to be used for the system.
+		 */
 		int i=0;
 		int N=0; //number of states
 		int M=0; //number of observation symbols.
@@ -91,14 +94,15 @@ public class HMM_System05 {
 
 				i++;
 			}
+			
+			/*
+			 * Initializing values so that probabilities are non-zero.
+			 */
 			for(int a=0; a<4;a++){
-				for(int j=0; j<4;j++){
-					if(j==3){
-						a_matrix[a][j] =1.-(.23*3.0);
-					} else{
-					a_matrix[a][j] =0.23;
-					}
-				}
+				a_matrix[a][0] =0.23;
+				a_matrix[a][1] =0.23;
+				a_matrix[a][2] =0.21;
+				a_matrix[a][3] =1.-.23-.23-.21;
 			}
 			
 			for(int a=0; a<4;a++){
@@ -117,8 +121,6 @@ public class HMM_System05 {
 			System.out.println("b_matrix: " + Arrays.deepToString(b_matrix));
 			System.out.println("pi matrix: " + Arrays.toString(pi_matrix));
 			System.out.println("==========================================End of Read File==========================================");
-			
-			
 			
 			String obsFilename1 = "/Users/jungwoonshin/git/cs440/cs440/src/p03/example1.obs";
 			runObsFile(obsFilename1, N,M, list_of_vocabs, a_matrix, b_matrix, pi_matrix);
@@ -139,6 +141,12 @@ public class HMM_System05 {
 		}
 	}
 
+	/*
+	 * Runs a single ObsFile. Assumes that a single file has at least one data set.
+	 * One data set means one observation sequence. 
+	 * As a side effect, it will compute the following values:
+	 * 		alpha, beta, gamma, chai, xi, sigma.
+	 */
 	private static void runObsFile(String obsFilename, int N, int M,String[] list_of_vocabs,
 			double[][] a_matrix, double[][] b_matrix, double[] pi_matrix)
 					throws FileNotFoundException, IOException {
@@ -150,8 +158,6 @@ public class HMM_System05 {
 		double[][] beta;
 		double[][] sigma;
 		double[][] chai;
-		double[][][] xi;
-		double[][] gamma;
 		int numWords =0;
 
 		for(int dataSetIndex=0; dataSetIndex<dataset_length; dataSetIndex++){
@@ -278,12 +284,8 @@ public class HMM_System05 {
 			}
 		}
 		b_matrix = trained_b_matrix;
-//		System.out.println("trained_b_matrix: " + Arrays.deepToString(trained_b_matrix));
 		alpha = getAlpha(N, trained_a_matrix, trained_b_matrix, pi_matrix, numWords, obsIndex);
 		beta = getBeta(N, trained_a_matrix, trained_b_matrix, numWords, obsIndex);
-//		System.out.println("trained_alpha_matrix: " + Arrays.deepToString(alpha));
-//		System.out.println("trained_beta_matrix: " + Arrays.deepToString(beta));
-		
 		System.out.println("trained_a_matrix: " + Arrays.deepToString(a_matrix));
 		System.out.println("trained_b_matrix: " + Arrays.deepToString(b_matrix));
 
@@ -293,7 +295,7 @@ public class HMM_System05 {
 		double[][] gamma;
 		gamma = new double[numWords][N];
 		/*	
-		//tutorial version
+		//tutorial version: Rabiner
 		for(int t=0; t<numWords;t++){
 			for(int i=0; i<N;i++){
 				for(int j=0;j<N;j++){
@@ -336,12 +338,6 @@ public class HMM_System05 {
 			double[][] b_matrix, double[][] alpha, double[][] beta,
 			double[][][] xi, int numWords, int[] obsIndex) {
 		xi[t][state1][state2] = alpha[t][state1] * a_matrix[state1][state2]*b_matrix[state2][obsIndex[t+1]] * beta[t+1][state2];
-
-
-		//		System.out.println(" alpha[t][state1]  " +  alpha[t][state1] );
-		//		System.out.println("b_matrix[state2][obsIndex[t+1]]: " + b_matrix[state2][obsIndex[t+1]]);
-		//		System.out.println("beta[t+1][state2] " + beta[t+1][state2] +"\n");
-
 		/* tutorial version
 		double denominator = 0.;
 		for(int i=0;i<N;i++){
@@ -410,7 +406,6 @@ public class HMM_System05 {
 	private static double[][] getChai(int N, double[][] a_matrix, double[][] sigma,
 			double[][] chai, int numWords, double[] a_ij_times_simga) {
 		//t=2 
-		Random rand = new Random();
 		for(int t=1;t<numWords;t++){
 			for(int j=0;j<N;j++){
 				for(int i=1;i<N;i++){
@@ -468,6 +463,12 @@ public class HMM_System05 {
 		return sigma;
 	}
 
+	/*
+	 * Executes Forward Procedure and returns the alpha array.
+	 * Size of alpha is T*N 
+	 * where T is the number of observed time sequence and
+	 * 		 N is the number of possible states.
+	 */
 	private static double[][] getAlpha(int N, double[][] a_matrix,
 			double[][] b_matrix, double[] pi_matrix, int numWords,
 			int[] obsIndex) {
@@ -494,6 +495,11 @@ public class HMM_System05 {
 
 		return alpha;
 	}
+	
+	/*
+	 * From each observed token sequence, finds the index that matches the vocabulary list.
+	 * It can return [0,m] where m is the number of possible outputs.  
+	 */
 	public static int getIndex(String word, String vocab[]){
 		int i = 0;
 		while(i < vocab.length && !vocab[i].equalsIgnoreCase(word) ) {
@@ -502,6 +508,10 @@ public class HMM_System05 {
 		return i;
 	}
 
+	/*
+	 * Reads matrix A and returns N*N array.
+	 * N is the number of states
+	 */
 	private static double[][] extract_amatrix_Values(int i, double[][] a_matrix,
 			String[] parseSpaceAvalues) {
 		for(int k=0; k<a_matrix[0].length;k++){
@@ -510,6 +520,11 @@ public class HMM_System05 {
 		return a_matrix;
 	}
 
+	/*
+	 * Read matrix B and returns N*M array.
+	 * N is number of states.
+	 * M is the number of possible outputs.
+	 */
 	private static double[][] extract_bmatrix_Values(int i, double[][] b_matrix,
 			String[] parseSpaceAvalues) {
 		for(int k=0;k<b_matrix[0].length;k++){
