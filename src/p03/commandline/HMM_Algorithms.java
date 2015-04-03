@@ -288,6 +288,8 @@ public class HMM_Algorithms {
 		return q_star;
 	}
 
+	
+	
 	public static double[][] getChai(int N, double[][] a_matrix, double[][] sigma,
 			double[][] chai, int numWords, double[] a_ij_times_simga) {
 		//t=2 

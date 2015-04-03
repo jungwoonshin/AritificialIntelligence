@@ -1,4 +1,4 @@
-package p03.commandline;
+package p03.compile;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.OptionalDouble;
 
-public class Parse {
+public class HMM_System {
 	
 	private static final double DENOMINATOR_CONSTANT = 10e-70;
 

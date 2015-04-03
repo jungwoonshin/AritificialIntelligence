@@ -41,6 +41,7 @@ public class Testing {
 
 	private static double[][] getBeta(int N, double[][] a_matrix,
 			double[][] b_matrix, int numWords, int[] obsIndex) {
+		
 		double[][] beta;
 		beta = new double[numWords][N];
 
@@ -63,5 +64,21 @@ public class Testing {
 			}
 		}
 		return beta;
+/*        double[][] beta = new double[numWords][N];
+      for (int t = numWords; t > 0; t--) {
+          for (int i = 0; i < N; i++) {
+              if (t == numWords) {
+                  beta[numWords - 1][i] = 1;
+              } else {
+                  for (int j = 0; j < N; j++) {
+                      beta[t - 1][i] += a_matrix[i][j] * b_matrix[j][obsIndex[t]] * beta[t][j];
+                  }
+              }
+              
+          }
+      }
+      
+      return beta;
+      */
 	}
 }
